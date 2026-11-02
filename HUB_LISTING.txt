@@ -1,0 +1,11 @@
+Game name: Marble Summit
+Category: Strategy / Games
+
+Short Learning Hub description (under 350 characters):
+Race four custom two-color marbles around Triangle, Classic, or six-player Summit boards. Play friends or computer rivals, discover risky shortcuts, bounce rivals back to base, and climb the center peak. Includes an interactive tutorial, 3D-style dice, and adjustable speed.
+
+Game details:
+2–6 local participants depending on the board, any combination of human and AI. No account or internet needed after loading.
+
+GitHub Pages URL:
+(Add the real URL after publishing.)
