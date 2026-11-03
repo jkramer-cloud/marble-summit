@@ -7,5 +7,5 @@ Race four custom two-color marbles around Triangle, Classic, or six-player Summi
 Game details:
 2–6 local participants depending on the board, any combination of human and AI. No account or internet needed after loading.
 
-GitHub Pages URL:
-(Add the real URL after publishing.)
+Expected GitHub Pages URL (after publishing the marble-summit repo):
+https://jkramer-cloud.github.io/marble-summit/

@@ -1,8 +1,12 @@
-# Marble Summit — v1.0
+# Marble Summit — v1.1
 
 An original, browser-based marble-racing game for 2–6 local players. Inspired by traditional marble-racing tabletop games, with a custom terraced mountain board, two-color glass marbles, AI rivals, and a guided tutorial.
 
 **No account, backend, installation, packages, or internet connection required.** The game uses a single self-contained `index.html` file. It runs on GitHub Pages and locally in a modern browser.
+
+## What changed in v1.1
+
+Each board now shows START, BASE, HOME ENTRY and HOME LANE locations, with directional movement and shortcut arrows connecting the outer track, rings, and center. A small legend explains those markings.
 
 ## Quick start
 
