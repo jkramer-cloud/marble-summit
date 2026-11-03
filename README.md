@@ -1,72 +1,41 @@
-# Marble Summit — v1.1
+# Marble Summit v2 — Classic Blue Board Edition
 
-An original, browser-based marble-racing game for 2–6 local players. Inspired by traditional marble-racing tabletop games, with a custom terraced mountain board, two-color glass marbles, AI rivals, and a guided tutorial.
+A self-contained browser marble-racing game designed to look and play more like classic tabletop marble races. This is an independent game and does not reproduce the Aggravation logo or licensed board artwork.
 
-**No account, backend, installation, packages, or internet connection required.** The game uses a single self-contained `index.html` file. It runs on GitHub Pages and locally in a modern browser.
+## Start playing
+Open `index.html` in a browser or deploy it to GitHub Pages. No server, installation, login, or account is needed after download. Works on desktop and touchscreens.
 
-## What changed in v1.1
+## Board styles
+- **Triangle:** a three-armed layout for two or three participants.
+- **Classic:** four colored arms on a blue tabletop; default board; two to four participants.
+- **Six-Sided:** five or six participants; optional extra inner-star shortcut circuit. With five, one arm is empty.
 
-Each board now shows START, BASE, HOME ENTRY and HOME LANE locations, with directional movement and shortcut arrows connecting the outer track, rings, and center. A small legend explains those markings.
+Each seat can be a local human player or an AI player. AI difficulty and personality are separately adjustable. Use Classic Blue, Retro Cream, or Night Blue board finishes.
 
-## Quick start
+## How to play
+1. Roll **1 or 6** to release a marble from BASE to your colored START hole.
+2. Move the full dice count clockwise. Passing an opponent is allowed; landing on one sends it to BASE. You cannot pass your own marble.
+3. Enter your colored HOME lane from your own home-entry hole and land by exact count. Get all four marbles home to win.
+4. If enabled, the **gold star** shortcut paths are connected by yellow dashed lines. Enter from the outer star on a later roll, travel clockwise along stars, then exit via the corresponding star to rejoin the outer track. Shortcut marbles can be captured.
+5. To enter the CENTER, land there on the exact final step from the innermost star. You generally need a **1** to leave; the six-sided board can optionally use 1 or 6. Center exits are alternative stars.
+6. A **6** gives another roll if that setting is enabled.
 
-1. Extract this ZIP file.
-2. Double-click `index.html` to play locally, or upload `index.html` to the root of a GitHub Pages repository.
-3. Choose **Triangle** (3 arms), **Classic** (4 arms), or **Summit** (6 arms).
-4. Choose 2–6 participants within the selected board's capacity; fill their slots with Humans and/or Computers.
-5. Give each team a primary and secondary color and marble style.
-6. Select **Start New Race**. Use **Tutorial** first for new players.
+The additional inner star ring on the Six-Sided board is a house-rule extension. Some other shortcut decisions are also simplified for accessible digital play and may differ from particular commercial editions.
 
-See `GITHUB_UPLOAD_INSTRUCTIONS.md` for deployment details.
+## Controls
+- Roll Dice, then choose a glowing marble. Click any glowing destination or a move from the sidebar.
+- Candidate move paths appear as dotted highlights.
+- Use **Paths** to reduce shortcut rail clutter; the star holes remain visible.
+- Angled view, Full Screen, sound, move highlighting, undo, auto-play when only one option, and computer-speed controls are available.
+- Seven hands-on tutorial lessons teach the main rules.
+- Saved locally in the browser under the new v2 save key, separate from v1.
 
-## Included game modes
+## Site
+Recommended repo: `marble-summit`
 
-| Board | Supported active racers | Visual structure | Shortcut options |
-|---|---|---|---|
-| Triangle | 2–3 | Rounded triangular board, three arms | One shortcut ring + center |
-| Classic | 2–4 | Four equally spaced arms | One shortcut ring + center |
-| Summit | 2–6 | Six arms, terraced inner rings and peak | Two shortcut rings + center (exit by 1 or 6) |
+GitHub Pages URL once deployed: `https://jkramer-cloud.github.io/marble-summit/`
 
-The 5-player Summit layout leaves one of the six arms unused.
+## Reference rules
+[Winning Moves Classic Aggravation rules](https://winning-moves.com/images/Aggravation_Rules.pdf)
 
-## Rules
-
-- Each team has four marbles. Roll **1** or **6** to release a base marble onto its marked starting hole.
-- Otherwise move exactly the rolled number of holes clockwise around the outer course; extra rolls on **6** are enabled by default.
-- You may pass opponent marbles and bump them back to base by landing directly on their space.
-- You may never pass or land on your own marble.
-- Base and Home are safe. Outer starting positions, inner shortcuts, and the center are capturable.
-- Move from your designated outer entry into your Home lane by an exact roll. Fill all four Home recesses to win.
-- Landing exactly on a golden outer star gives you the option **on a later turn** to move into the inner ring. Exit inner-ring holes to an outer star by spending a movement step.
-- Summit adds an upper inner ring. The inner paths are shorter but exposed to captures.
-- Move from the innermost ring into the center only as the final step of a die roll. Once there, you must roll a **1** (Triangle/Classic) or a **1 or 6** (Summit default) to exit. Exiting the center spends the entire die roll and places your marble at one of the innermost ring positions; a 6 still awards a bonus roll when enabled.
-- The game implements its own shortcut transitions and other configurable **house rules** rather than replicating every print edition of a commercial marble game.
-
-## Customization
-
-- Up to six individually named teams, each Human or Computer.
-- Change primary and secondary colors for individual glass marbles.
-- Patterns: Swirl, Cat's-eye, Glitter, Frosted, Solid.
-- Computer difficulty: Easy, Medium, Hard.
-- Computer personality: Balanced, Aggressive, Careful, Shortcut, Chaotic.
-- Computer animation speed: Cinematic, Normal, Fast, Instant. Speed can also be changed during a match.
-- Board finish: Walnut, Golden Maple, Midnight Slate.
-- Gameplay toggles: shortcuts enabled, bonus turns on 6, auto-play sole legal move, Summit center exit 1 or 1-or-6.
-- In-game options: sound, move highlights, path lines, angled/top-down view, fullscreen, and undo of the most recent move.
-- Local autosave and Resume Saved Game through browser storage.
-
-## Interactive tutorial
-
-Seven hands-on lessons: releasing a marble, moving clockwise, capturing an opponent, entering a shortcut, climbing to the center, escaping the center, and reaching Home. The lessons use guided die rolls and reset the board for each teaching example. The tutorial does **not** overwrite a real race in local storage.
-
-## Classroom considerations
-
-- Runs locally without sign-ins, student data collection, or servers.
-- Animations honor the operating system's reduced-motion preference.
-- Use the overhead view and move highlights for easier tracking on projectors.
-- A saved match stays on the same browser/device unless its local storage is cleared.
-- Use New Game to reset a race; the Resume button loads the most recently saved match.
-
-## About
-
-Marble Summit is an independently created game using original visual assets and procedural SVG artwork. It does not reproduce an existing game's official logos or commercial graphics.
+Aggravation is a trademark of its respective owner. Marble Summit is a separate original educational/hobby implementation.

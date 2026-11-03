@@ -1,14 +1,16 @@
-# Marble Summit Changelog
+# Changelog
 
-## v1.1 — Clear Board Routing Update
-- Added bold START labels with arrows to each color's launch hole.
-- Added HOME ENTRY labels so the end-path turn-in point is easy to read.
-- Added BASE labels and HOME LANE callouts.
-- Added clearer shortcut guidance between the outer track, inner rings, and center/peak.
-- Added direction arrows around the outer track and shortcut rings.
-- Added a small board legend explaining START, HOME, and shortcut arrows.
-- Updated side guidance text to reinforce the printed board labels.
+## v2.0 — Classic Blue Board Edition (2026-11-03)
 
-## v1.0
-- Initial release with Triangle, Classic, and Summit boards.
-- Tutorial, AI players, custom marble styles, shortcut rules, and animated dice.
+- Replaced the brown/wood mountain board with classic-style square blue boards.
+- Created bright, bordered player wedges and recessed dark perimeter holes.
+- Relocated each player's HOME lane to the interior of their own colored section.
+- Moved BASE marbles farther from START; added distinct START, BASE, and HOME identifiers.
+- Rebuilt shortcuts as clear connecting golden star routes and a central flower hub.
+- Made the Six-Sided extra inner ring flat rather than terraced or raised.
+- Added route preview overlays after selecting marbles.
+- Retained the Triangle, Classic, and Six-Sided layouts; tutorial, AI, animation, local saving, full-screen, and customization.
+- Separated save namespace from v1 to prevent an old save loading with the new rendering.
+
+## v1.1
+- Previous wood board, mountain graphics, and board routing overlays.
