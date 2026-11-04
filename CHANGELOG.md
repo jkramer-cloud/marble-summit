@@ -1,13 +1,13 @@
-# Marble Summit Changelog
+# Marble Summit — Changelog
 
-## v5.0 — Polygon Corner Base Rebuild
-- Added new board families for Triangle, Square, Pentagon, Hexagon, Heptagon, and Octagon layouts.
-- Moved bases into the outer corners/ends of each arm to better match the original Aggravation-style board look.
-- Kept the 3D rotating board system while making overhead view the default.
-- Repositioned the shortcut gate and home-entry hole to better align with the arm layout.
-- Generalized the larger-board shortcut system so 5–8 corner boards use a lower ring plus a shared 3-spot upper ring.
-- Larger boards require a 1 or 6 to climb to the inner rings and center.
-- Preserved tutorial, AI, dice animation, fullscreen support, saves, and two-color marbles.
-
-## v4.0
-- Classic six-arm rebuild with overhead default view.
+## v6.0 — Aggravation-style Polygon Rebuild
+- New U-shaped perimeter track geometry with inward home lanes
+- BASE trays placed outside each track at the polygon corners
+- Actual triangular, square, pentagonal, hexagonal, heptagonal, and octagonal board outlines
+- Board now requires the number of players matching its sides
+- Fixed seven and eight players being unable to start due to missing team presets
+- START and HOME entrance now across from one another at the inner end of each colored arm
+- HOME entrance is exactly one space prior to START in the circular route
+- Updated shortcut star placement, connecting rails and tutorial instructions
+- Scaled marble visuals for crowded seven/eight-player boards
+- Kept optional rotating 3D board, automated camera, AI opponents, animations, and saved games

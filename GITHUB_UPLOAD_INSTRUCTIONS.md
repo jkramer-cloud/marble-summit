@@ -1,9 +1,11 @@
-# GitHub Upload Instructions
+# Updating the Marble Summit GitHub Repository
 
-1. Open your `marble-summit` repository.
-2. Replace the existing `index.html` with the `index.html` from this package.
-3. Optionally upload the README and changelog files.
-4. Commit the changes.
-5. Refresh your GitHub Pages site.
+1. Download and unzip this package.
+2. In your existing `marble-summit` GitHub repository, open the root folder.
+3. Upload/replace the game's `index.html` with this package's `index.html`.
+4. Optionally upload the updated `README.md` and `CHANGELOG.md`.
+5. Commit your changes and refresh your live GitHub Pages site (hard refresh if cached).
 
-If GitHub Pages is already enabled for the repository, the existing Learning Hub link should continue to work.
+The game uses the same repository address and your Learning Hub game link can remain unchanged.
+
+Files inside `previews/` are reference screenshots and are not necessary for the game to run.
