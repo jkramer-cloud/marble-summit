@@ -1,13 +1,13 @@
-# Changelog
+# Marble Summit Changelog
 
-## v4.0 — Classic Six-Arm Edition
+## v5.0 — Polygon Corner Base Rebuild
+- Added new board families for Triangle, Square, Pentagon, Hexagon, Heptagon, and Octagon layouts.
+- Moved bases into the outer corners/ends of each arm to better match the original Aggravation-style board look.
+- Kept the 3D rotating board system while making overhead view the default.
+- Repositioned the shortcut gate and home-entry hole to better align with the arm layout.
+- Generalized the larger-board shortcut system so 5–8 corner boards use a lower ring plus a shared 3-spot upper ring.
+- Larger boards require a 1 or 6 to climb to the inner rings and center.
+- Preserved tutorial, AI, dice animation, fullscreen support, saves, and two-color marbles.
 
-- Rebuilt all three board formats using long, narrow colored arms and a smoother outer track, keeping 12 spaces per arm.
-- Redesigned fixed Base trays and straight, colored four-hole Home lanes.
-- Restyled the central connector and raised shortcut areas to remove the busy hexagon look.
-- Six-arm board keeps six lower stations, three upper stations, and special 1/6 inward-entry rolls.
-- Overhead view is now the default; optional orbiting 3D, seat-follow camera, and animated moves remain.
-- Preserved human/computer play, AI personalities/difficulties, two-color marbles, dice, fullscreen, save, and nine-lesson tutorial.
-- Uses a new v4 save key to avoid loading incompatible old geometry.
-
-Tested in Chromium: 3- and 4-player and six-arm board render, all nine tutorial stages, multiple computer turns, switch between 2D and 3D, desktop and phone layout, and JavaScript runtime checks.
+## v4.0
+- Classic six-arm rebuild with overhead default view.
