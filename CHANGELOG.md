@@ -1,13 +1,10 @@
-# Marble Summit — Changelog
+# Changelog
 
-## v6.0 — Aggravation-style Polygon Rebuild
-- New U-shaped perimeter track geometry with inward home lanes
-- BASE trays placed outside each track at the polygon corners
-- Actual triangular, square, pentagonal, hexagonal, heptagonal, and octagonal board outlines
-- Board now requires the number of players matching its sides
-- Fixed seven and eight players being unable to start due to missing team presets
-- START and HOME entrance now across from one another at the inner end of each colored arm
-- HOME entrance is exactly one space prior to START in the circular route
-- Updated shortcut star placement, connecting rails and tutorial instructions
-- Scaled marble visuals for crowded seven/eight-player boards
-- Kept optional rotating 3D board, automated camera, AI opponents, animations, and saved games
+## Illustrated Board Edition
+- Replaced the approximate SVG board artwork with the exact approved board illustration
+- Embedded the original illustration directly in `index.html`
+- Mapped playable outer-track, BASE, and HOME positions to the artwork
+- Preserved actual photographed base marbles until they leave BASE
+- Removed overlapping logical positions at adjacent star junctions
+- Retained computer opponents, dice, tutorial, game speed settings, and local saves
+- Kept the center as a decorative motif without shortcut rules

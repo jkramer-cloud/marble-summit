@@ -1,30 +1,32 @@
-# Marble Summit v6.0 — Aggravation-style Polygon Boards
+# Marble Summit — Illustrated Board Edition
 
-A standalone, offline-capable browser marble racing game inspired by the traditional Aggravation board layout. No backend or installation is required.
+This edition displays the **actual approved six-player board illustration** as its playing surface. It no longer redraws the blue board, colored arms, U-shaped tracks, or center as programmed graphics.
 
-## What's new in v6.0
+## Features
+- Six colored player arms based on the approved artwork
+- Four marble BASE positions and four HOME positions per player
+- 78 manually mapped outer-track steps (13 per arm)
+- Interactive marble selection and destination highlighting
+- Roll 1 or 6 to leave BASE; optional bonus roll on 6
+- Captures, own-marble blocking, exact-count HOME, win detection
+- Up to six human/CPU opponents with difficulties and play styles
+- Five guided tutorial lessons, undo, autosave, and fullscreen
+- Two-color marble effects for moved or customized pieces
 
-- Completely redesigned **U-shaped track arms**: 12 outer-track spaces per player, wrapping around each colored home lane.
-- **Corner BASE trays outside the track**, with four marbles arranged from the tip inward.
-- **A matching polygon-shaped physical tabletop**, with exactly as many sides as players.
-- Board choices: Triangle (3), Square (4), Pentagon (5), Hexagon (6), Heptagon (7), and Octagon (8).
-- **Corrected HOME entry**: the HOME entrance is now on the opposite side of its colored arm from START, at the outer-track space immediately **before** START in movement order. This requires traveling `12 × players − 1` outer-track steps from START before first reaching HOME entry.
-- Separate HOME lanes, clearer letter markers and connections, smaller marbles on crowded larger boards.
-- Eight team configurations (the previous build only created six).
-- Existing animated dice, AI personalities, multiple speeds, two-color marble styling, nine tutorial lessons, automatic camera rotation, overhead and 3D views, and local saves are retained.
+## Art and limitations
 
-## Rules
+The reference was generated as **concept artwork**, not a mathematically engineered game board. The route positions were manually placed over it. Most positions align with photographed holes; a small number fall between painted holes where the illustration is inconsistent. The static gold stars and central motif are decorations, not shortcut spaces.
 
-1. Roll 1 or 6 to release a marble at its START space. A 6 can earn another turn.
-2. Move clockwise around the outside track. Land on another player's marble to return it to BASE; do not pass your own marbles.
-3. Once your marble completes the outer circuit to your HOME entrance, branch into your own four-hole HOME lane. An exact count is required.
-4. Optional shortcuts: stop on a gold GATE; roll 1 or 6 to climb to the lower ring. Boards with 5–8 players have another raised ring with three shared positions, reachable with another 1 or 6. Center exits require 1 or optionally 1 or 6 on larger boards.
-5. First to finish all four marbles in HOME wins.
+For the default marble colors, original photographed BASE marbles remain visible until they move. When a marble leaves BASE, the static photo marble is masked with a dark recess so it does not appear duplicated.
 
-## Play on GitHub Pages
+This is a **2D image-backed board with live SVG pieces**, not true 3D. The optional angled view tilts the display.
 
-Upload `index.html` to the root of your existing `marble-summit` repository and enable GitHub Pages from the `main` branch `/ (root)` directory. No build step is needed.
+## GitHub Pages
 
-## Testing
+Upload the included `index.html` to the root of your `marble-summit` GitHub repository, replacing the old version. The board image is embedded inside that single file, so no external image upload is required. Your existing Learning Hub link can stay unchanged.
 
-Automated browser checks verified all six player counts, the correct number of players and pieces, one-lap HOME-entry indexing, each game's HOME move, all nine guided tutorial lessons, eight computer opponents playing several turns, and no uncaught browser errors. This is a revised build, so older saved matches are not imported. Long full-match balance testing with students remains advisable.
+The previews are optional. Open `index.html` locally in a modern browser, or serve it with GitHub Pages.
+
+## Test status
+
+JavaScript syntax checked. Browser checks covered loading the game, 24 initial marbles, six-player selection, BASE release, all five tutorial lessons, capture, HOME entry, desktop rendering, and mobile rendering. A full-length six-player match was not run from beginning to end.

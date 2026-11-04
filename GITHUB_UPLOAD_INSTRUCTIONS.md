@@ -1,11 +1,9 @@
-# Updating the Marble Summit GitHub Repository
+# Install Marble Summit — Illustrated Board Edition
 
-1. Download and unzip this package.
-2. In your existing `marble-summit` GitHub repository, open the root folder.
-3. Upload/replace the game's `index.html` with this package's `index.html`.
-4. Optionally upload the updated `README.md` and `CHANGELOG.md`.
-5. Commit your changes and refresh your live GitHub Pages site (hard refresh if cached).
+1. Extract this ZIP.
+2. Open your existing `marble-summit` GitHub repository.
+3. Replace its root `index.html` with the new `index.html` in this ZIP.
+4. Commit the change.
+5. Hard refresh GitHub Pages (Ctrl+F5) so the new board loads.
 
-The game uses the same repository address and your Learning Hub game link can remain unchanged.
-
-Files inside `previews/` are reference screenshots and are not necessary for the game to run.
+There are no additional required assets: the approved image is embedded inside the HTML file. The Learning Hub link does not need changing.
