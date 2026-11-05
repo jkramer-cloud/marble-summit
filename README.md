@@ -1,11 +1,11 @@
-# Marble Summit v3.2 — WebGL Shader Fix + 3D Compatibility
+# Marble Summit v3.3 — Arcade Rivals + Coconut Clops
 
 A playable, six-sector marble-race board for GitHub Pages. **Phase 3 replaces the visual presentation, not the rules.** The original Phase 2.1 engine, board coordinates, all 139 fixed positions, and saved-game key are retained unchanged.
 
 ## Publish to your existing GitHub repository
 
 1. Open `jkramer-cloud/marble-summit` on GitHub.
-2. Extract the v3.2 WebGL fix ZIP on your computer.
+2. Extract the v3.3 Arcade Rivals ZIP on your computer.
 3. Upload **all files and folders from inside the ZIP** to the **root** of the existing repository, replacing matching files. In particular, add the new `arcade3d.js` alongside `index.html`, `style.css`, `app.js`, `board-data.js`, and `engine.js`.
 4. Commit to the branch used by GitHub Pages (usually `main`). Your existing Learning Hub link still works.
 5. Open the site and use `Ctrl + Shift + R` to refresh after deployment.
@@ -51,3 +51,14 @@ If hardware WebGL fails even on a capable computer, check the browser Console fo
 - `board-data.js`, `engine.js`, `movement-engine.mjs`, `board-geometry.json` — approved Phase 2.1 rules and coordinates, unchanged
 - `tests/` — engine, UI, geometry and Phase 3 integration checks
 - `reference/` — approved precision diagrams and design documentation
+
+## v3.3 Arcade Rivals additions
+
+- Choose any six-sector corner for each human or computer player; 2-player defaults are opposite corners.
+- Name human players (up to 20 characters), or choose from 10 distinct computer strategies with two named characters each (20 total). Random picks one for you.
+- Computer strategies genuinely differ in their move preferences, including shortcut specialists, finishers and a leader-targeting comeback spoiler.
+- Optional character comments after turns and captures; independently switch character chat off.
+- Repaired 3D die animation and added synthesized dice-rattle/landing audio.
+- Added original, locally synthesized *coconut shell clop-clop* each time a marble hops from one hole to another, synced in WebGL, 3D Lite and 2D. No copyrighted movie audio is included.
+- One sound toggle controls all sound effects; sound is off by default for classrooms.
+- Movement engine and geometry still unchanged from the approved Phase 2.1 version.

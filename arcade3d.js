@@ -217,6 +217,11 @@ function drawSoftware(t){const s=softCtx,w=viewW,h=viewH;
 }
 
 function render(t){if(anim&&t>=anim.start+anim.duration*1.3){const done=anim.done;anim=null;done?.();}
+ if(anim && !document.hidden && window.Marble3D?.active && anim.path.length && t<anim.start+anim.duration){
+  const progress=clamp((t-anim.start)/anim.duration,0,.999999);
+  const hop=Math.floor(progress*anim.path.length);
+  if(hop!==anim.lastClopStep){anim.lastClopStep=hop;coconutClop(hop);}
+ }
  if(!window.Marble3D?.active||document.hidden){requestAnimationFrame(render);return;}
  if(useSoftware&&t-lastClock<32){requestAnimationFrame(render);return;}lastClock=t;
  const palette=Object.values(bridge.colors()).join(';');
@@ -261,20 +266,81 @@ function overhead(){CAM.elevation=Math.PI/2-.005;CAM.yaw=0;CAM.cx=CAM.cz=0;CAM.m
 function updateControls(){const b=$('cameraTop');if(b)b.setAttribute('aria-pressed',String(CAM.mode==='overhead'));const a=$('cameraAngle');if(a)a.setAttribute('aria-pressed',String(CAM.mode==='angled'));}
 function animateMove(previous,chosen,event,done){if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){done();return;}
  const captured=event.capture?.marbleId||event.capture?.id;
- anim={from:chosen.from,path:chosen.path,marbleId:chosen.marbleId,captureMarble:captured||null,captureFrom:chosen.to,start:performance.now(),duration:Math.max(650,Math.min(1800,chosen.path.length*150)),done};
- sound('move');if(event.capture)setTimeout(()=>sound('capture'),Math.max(220,anim.duration*.72));if(event.bonusRoll)sound('bonus');if(bridge.snapshot()?.phase==='finished')setTimeout(()=>sound('win'),anim.duration);
+ anim={from:chosen.from,path:chosen.path,marbleId:chosen.marbleId,captureMarble:captured||null,captureFrom:chosen.to,start:performance.now(),duration:Math.max(650,Math.min(1800,chosen.path.length*150)),lastClopStep:-1,done};
+ // Movement clops are triggered by actual travel between holes in render(), not a loose sound timer.
+ if(event.capture)setTimeout(()=>sound('capture'),Math.max(220,anim.duration*.72));if(event.bonusRoll)sound('bonus');if(bridge.snapshot()?.phase==='finished')setTimeout(()=>sound('win'),anim.duration);
 }
-let audioOn=false,audio=null;
-function sound(kind){if(!audioOn)return;try{audio ||=new (window.AudioContext||window.webkitAudioContext)();audio.resume();const now=audio.currentTime;
- const sequences=kind==='capture'?[[340,0,.09],[210,.10,.11],[125,.23,.20]]:kind==='bonus'?[[480,0,.09],[640,.09,.12]]:kind==='win'?[[392,0,.14],[494,.17,.14],[587,.34,.14],[784,.51,.26]]:kind==='roll'?[[160,0,.04],[210,.075,.04],[170,.14,.06]]:[[260,0,.045]];
- for(const [f,delay,dur] of sequences){const osc=audio.createOscillator(),gain=audio.createGain();osc.type=kind==='capture'?'triangle':'sine';osc.frequency.setValueAtTime(f,now+delay);gain.gain.setValueAtTime(.0001,now+delay);gain.gain.exponentialRampToValueAtTime(.055,now+delay+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+delay+dur);osc.connect(gain).connect(audio.destination);osc.start(now+delay);osc.stop(now+delay+dur+.02);}}
- catch(err){console.warn('Audio unavailable:',err);}}
-function initDice(){const shell=$('diceShell');if(!shell)return;const cube=document.createElement('div');cube.className='arcade-die';cube.id='arcadeDie';
+let audioOn=false,audio=null,coconutNoise=null,diceRollSerial=0,dieAngles={x:-15,y:-15};
+// Original little coconut-shell percussion, synthesized locally: two dry wooden clicks per hop.
+// Not sampled from a movie, recording or soundtrack.
+function coconutClop(hop=0){
+ if(!audioOn)return;
+ try{
+  audio ||= new (window.AudioContext||window.webkitAudioContext)();audio.resume();
+  if(!coconutNoise){
+   const length=Math.max(1,Math.floor(audio.sampleRate*.07));coconutNoise=audio.createBuffer(1,length,audio.sampleRate);
+   const values=coconutNoise.getChannelData(0);
+   for(let i=0;i<length;i++)values[i]=(Math.random()*2-1)*Math.exp(-i/length*8);
+  }
+  const now=audio.currentTime;
+  for(let k=0;k<2;k++){
+   const t=now+k*.038;
+   const click=audio.createBufferSource();click.buffer=coconutNoise;
+   const wood=audio.createBiquadFilter();wood.type='bandpass';wood.frequency.value=(k?620:435)+(hop%3)*25;wood.Q.value=.85;
+   const vol=audio.createGain();vol.gain.setValueAtTime(.0001,t);vol.gain.linearRampToValueAtTime(k?.065:.08,t+.002);
+   vol.gain.exponentialRampToValueAtTime(.0001,t+.060);
+   click.connect(wood).connect(vol).connect(audio.destination);click.start(t);click.stop(t+.065);
+   const tone=audio.createOscillator(),toneVol=audio.createGain();tone.type='triangle';
+   tone.frequency.setValueAtTime(k?245:185,t);tone.frequency.exponentialRampToValueAtTime(k?155:110,t+.055);
+   toneVol.gain.setValueAtTime(.0001,t);toneVol.gain.linearRampToValueAtTime(.025,t+.003);
+   toneVol.gain.exponentialRampToValueAtTime(.0001,t+.055);
+   tone.connect(toneVol).connect(audio.destination);tone.start(t);tone.stop(t+.059);
+  }
+ }catch(err){console.warn('Coconut clop audio unavailable:',err);}
+}
+function playDiceRattle(){
+ // Short local Web Audio rattle made from filtered noise; no download and no music.
+ if(!audioOn)return;
+ try{
+  audio ||=new (window.AudioContext||window.webkitAudioContext)();audio.resume();const now=audio.currentTime;
+  const length=Math.max(1,Math.floor(audio.sampleRate*.055));const buffer=audio.createBuffer(1,length,audio.sampleRate);const data=buffer.getChannelData(0);
+  for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*(1-i/length);
+  for(let j=0;j<9;j++){
+    const source=audio.createBufferSource();source.buffer=buffer;
+    const filter=audio.createBiquadFilter();filter.type='lowpass';filter.frequency.value=750+j*90;
+    const gain=audio.createGain();const t=now+j*.082;gain.gain.setValueAtTime(.0001,t);gain.gain.linearRampToValueAtTime(.11-j*.009,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.055);
+    source.connect(filter).connect(gain).connect(audio.destination);source.start(t);source.stop(t+.056);
+  }
+  const knock=audio.createOscillator(),kg=audio.createGain();knock.type='triangle';knock.frequency.setValueAtTime(195,now+.77);knock.frequency.exponentialRampToValueAtTime(80,now+.9);kg.gain.setValueAtTime(.0001,now+.77);kg.gain.linearRampToValueAtTime(.085,now+.784);kg.gain.exponentialRampToValueAtTime(.0001,now+.92);knock.connect(kg).connect(audio.destination);knock.start(now+.77);knock.stop(now+.93);
+ }catch(err){console.warn('Dice audio unavailable:',err);}
+}
+function sound(kind,hop=0){
+ if(!audioOn)return;if(kind==='roll'){playDiceRattle();return;}if(kind==='clop'){coconutClop(hop);return;}
+ try{audio ||=new (window.AudioContext||window.webkitAudioContext)();audio.resume();const now=audio.currentTime;
+ const sequences=kind==='capture'?[[340,0,.09],[210,.10,.11],[125,.23,.20]]:kind==='bonus'?[[480,0,.09],[640,.09,.12]]:kind==='win'?[[392,0,.14],[494,.17,.14],[587,.34,.14],[784,.51,.26]]:[[260,0,.045]];
+ for(const [f,delay,dur] of sequences){const osc=audio.createOscillator(),gain=audio.createGain();osc.type=kind==='capture'?'triangle':'sine';osc.frequency.setValueAtTime(f,now+delay);gain.gain.setValueAtTime(.0001,now+delay);gain.gain.exponentialRampToValueAtTime(.045,now+delay+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+delay+dur);osc.connect(gain).connect(audio.destination);osc.start(now+delay);osc.stop(now+delay+dur+.02);}}
+ catch(err){console.warn('Audio unavailable:',err);}
+}
+function initDice(){
+ const shell=$('diceShell');if(!shell)return;const cube=document.createElement('div');cube.className='arcade-die';cube.id='arcadeDie';
  const pips={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
- const faces=['front','right','back','left','top','bottom'];faces.forEach((f,i)=>{const face=document.createElement('div');face.className='die-face face-'+f;for(let n=0;n<9;n++){const cell=document.createElement('i');if(pips[i+1].includes(n))cell.className='die-pip';face.appendChild(cell);}cube.appendChild(face);});shell.appendChild(cube);rollDice(1,false);}
-function rollDice(n,play=true){const cube=$('arcadeDie');if(!cube)return;
- const orientations={1:[-17,-18],2:[-17,-108],3:[-17,162],4:[-17,72],5:[-105,-18],6:[73,-18]};const [x,y]=orientations[n]||orientations[1];const spin=play?720+Math.floor(Math.random()*2)*360:0;
- cube.style.transform=`rotateX(${x+spin}deg) rotateY(${y+(play?720:0)}deg)`;if(play)sound('roll');lastRoll=n;}
+ // Opposite faces sum to seven: front/back 1/6, right/left 2/5, top/bottom 3/4.
+ const faces=[['front',1],['right',2],['back',6],['left',5],['top',3],['bottom',4]];
+ faces.forEach(([f,value])=>{const face=document.createElement('div');face.className='die-face face-'+f;face.setAttribute('data-value',String(value));for(let n=0;n<9;n++){const cell=document.createElement('i');if(pips[value].includes(n))cell.className='die-pip';face.appendChild(cell);}cube.appendChild(face);});
+ shell.appendChild(cube);rollDice(1,false);
+}
+function rollDice(n,play=true){
+ const cube=$('arcadeDie');if(!cube)return;
+ // Each target shows the actual rolled face. Increasing full turns guarantees an animation even for repeated numbers.
+ const orientations={1:[-15,-15],2:[-15,-105],3:[75,-15],4:[-105,-15],5:[-15,75],6:[-15,165]};
+ const [ax,ay]=orientations[n]||orientations[1];
+ if(!play){cube.style.transition='none';dieAngles={x:ax,y:ay};cube.style.transform=`rotateX(${ax}deg) rotateY(${ay}deg)`;void cube.offsetWidth;cube.style.transition='';return;}
+ diceRollSerial++;
+ const turns=2+diceRollSerial*2;
+ dieAngles={x:ax+360*turns,y:ay+360*turns};
+ cube.style.transform=`rotateX(${dieAngles.x}deg) rotateY(${dieAngles.y}deg)`;
+ sound('roll');
+}
 const view=window.Marble3D={active:!!((gl&&program&&ctx)||useSoftware),supported:!!((gl&&program&&ctx)||useSoftware),renderer:useSoftware?'software':(gl&&program?'webgl':'none'),startupError,
  sync(){ /* the renderer reads engine state on every frame */ }, zoom, reset:home, overhead, angled:home, animateMove,
  rollDie:rollDice,

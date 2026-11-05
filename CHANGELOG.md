@@ -1,3 +1,11 @@
+# v3.3 — Arcade Rivals + Coconut Clops
+
+- Rebuilt dice rotations for clearer repeat-roll tumbling, consistent six-sided faces and original dice rattle/landing audio.
+- Choose human/CPU seats at any of six corners, automatically spread 2–4 player defaults.
+- Custom human names, 10 strategy-based CPU personalities with two named avatars per profile (20 characters), plus Random, and optional short quips.
+- Original synthesized coconut-shell clop-clop sound, synchronized to each marble hop in 3D, 3D Lite and 2D; all sounds off by default.
+- Preserves movement engine, START/HOME arrangement and original coordinates.
+
 # v3.2 — WebGL shader precision fix
 
 - Corrected the reported GPU shader link failure: `Precisions of uniform uEye differ between VERTEX and FRAGMENT shaders`.

@@ -68,3 +68,34 @@ body.software-3d.show-3d #arcadeLabels{display:block}
 
 .render-mode-note{color:#ffe4a5;background:#4b351a;border:1px solid #b68d4d;border-radius:20px;padding:5px 8px;font-size:10px;font-weight:800}
 .render-mode-note[hidden]{display:none}
+
+/* Phase 3.3 seating, named characters and optional dialogue */
+.setup-dialog{width:min(100%,900px);max-height:min(95dvh,1080px)}
+.seat-chooser{display:grid;grid-template-columns:165px 1fr;gap:20px;align-items:center;padding:13px;border-radius:14px;background:#0b1d30;border:1px solid #284a68}
+.setup-seat-map{position:relative;width:150px;height:150px;margin:0 auto;border:2px solid #49677f;border-radius:36%;transform:rotate(30deg);background:radial-gradient(circle,#2a5161 0 17%,#142b3a 18% 54%,#0b1829 55%);box-shadow:inset 0 0 24px #071c2b,0 0 22px #13436166}
+.seat-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);color:#a9d4e4;font-size:9px;font-weight:900;letter-spacing:.5px}
+.seat-map-dot{position:absolute;transform:translate(-50%,-50%) rotate(-30deg);width:34px;height:34px;border-radius:50%;background:#142636;color:#bcd4e2;border:2px solid var(--seat-color);font-size:13px;font-weight:950;box-shadow:0 0 12px color-mix(in srgb,var(--seat-color),transparent 48%);z-index:2;cursor:pointer}
+.seat-map-dot.occupied{background:var(--seat-color);color:#061528;text-shadow:0 1px 1px #fff5}
+.seat-map-dot.editing{outline:2px solid #fff;outline-offset:3px;z-index:3}
+.seat-explain label{display:block;font-size:12px;font-weight:850;color:#d2eaff;margin-bottom:8px}
+.seat-explain select{max-width:100%;padding:10px 12px;border-radius:9px;border:1px solid #6d9cb9;background:#18384e;color:#ebfaff}
+.seat-explain p{margin:9px 0 0;font-size:11px;color:#a8c4d8}
+.setup-players{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.setup-player-expanded{display:flex;flex-direction:column;gap:9px;align-items:stretch;padding:13px}
+.setup-player-head{display:flex;align-items:center;gap:9px;min-width:0}
+.setup-player-head strong{font-size:12px;white-space:nowrap}
+.setup-player-head select{min-width:0;flex:1;max-width:none}
+.setup-player-fields{display:flex;gap:8px;min-width:0}
+.setup-player-fields select,.setup-player-fields input{max-width:none;min-width:0;flex:1;background:#183954;color:#e1f4ff;border:1px solid #47708f;border-radius:8px;padding:8px 7px;font-size:11px}
+.setup-player-fields .character-picker{flex:1.45}
+.setup-player-fields .type-picker{flex:1.05}
+.setup-player-fields .player-name-input{flex:1.6}
+.character-desc{color:#9acadd;font-size:11px;line-height:1.35;min-height:27px}
+.setup-color-row{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;font-size:10px;color:#a5c5db}
+.setup-color-row select{max-width:140px}
+.character-quote{margin-top:12px;padding:10px 12px;border-left:3px solid #7edfff;background:#102e438a;border-radius:0 10px 10px 0}
+.character-quote strong{color:#9ce7ff;font-size:11px}
+.character-quote p{margin:6px 0 0;font-size:12px;line-height:1.4;color:#e3f4ff;font-style:italic}
+.banter-button{margin-left:6px}
+@media(max-width:750px){.setup-players{grid-template-columns:1fr}.seat-chooser{grid-template-columns:1fr}.seat-explain{text-align:center}.setup-seat-map{width:150px;height:150px}.setup-dialog{max-height:95dvh}}
+@media(prefers-reduced-motion:reduce){.arcade-die,.dice-shell.rolling{animation:none!important;transition:none!important}}
