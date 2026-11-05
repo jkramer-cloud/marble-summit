@@ -59,3 +59,12 @@ body.show-3d .board-panel{border-color:#4386a1}
 body.show-3d .stage-hint{background:#092b42;border-color:#3b7899}
 @media(max-width:720px){.board-topline{flex-wrap:wrap}.board-topline>div:first-child{max-width:100%}.board-tools{width:100%;justify-content:space-between}.board-tools button{flex-shrink:0}.board-stage{height:clamp(370px,55dvh,640px)}}
 @media(prefers-reduced-motion:reduce){.arcade-die{transition-duration:0.01ms}}
+
+/* Phase 3.1: software 3D fallback when WebGL is unavailable or blocked */
+#softwareCanvas{display:none;position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab;z-index:1;outline-offset:-6px}
+body.software-3d.show-3d #arcadeCanvas{display:none}
+body.software-3d.show-3d #softwareCanvas{display:block}
+body.software-3d.show-3d #arcadeLabels{display:block}
+
+.render-mode-note{color:#ffe4a5;background:#4b351a;border:1px solid #b68d4d;border-radius:20px;padding:5px 8px;font-size:10px;font-weight:800}
+.render-mode-note[hidden]{display:none}

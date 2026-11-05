@@ -4,11 +4,17 @@
 (() => {
 'use strict';
 const bridge = window.MarbleSummitView, board = window.MARBLE_BOARD;
-const canvas = document.getElementById('arcadeCanvas'), overlay = document.getElementById('arcadeLabels');
+const canvas = document.getElementById('arcadeCanvas'), softCanvas = document.getElementById('softwareCanvas'), overlay = document.getElementById('arcadeLabels');
 const $ = id => document.getElementById(id);
-if (!bridge || !board || !canvas || !overlay) return;
-const gl = canvas.getContext('webgl', {alpha:false, antialias:true, depth:true, powerPreference:'high-performance'});
+if (!bridge || !board || !canvas || !softCanvas || !overlay) return;
+let gl=null, startupError='';
+// Retry standard and compatibility WebGL contexts before selecting the CPU renderer.
+for(const kind of ['webgl','experimental-webgl','webgl2']){
+ try {gl=canvas.getContext(kind,{alpha:false,antialias:true,depth:true,powerPreference:'default'});if(gl)break;}
+ catch(err){startupError=String(err?.message||err);}
+}
 const ctx = overlay.getContext('2d');
+const softCtx = softCanvas.getContext('2d', {alpha:false});
 const CAM = {yaw:0, elevation:Math.PI*0.32, zoom:1.03, cx:0, cz:0, mode:'angled'};
 const model = {vertices:[], version:0};
 const rgb = hex => [parseInt(hex.slice(1,3),16)/255,parseInt(hex.slice(3,5),16)/255,parseInt(hex.slice(5,7),16)/255];
@@ -22,7 +28,10 @@ const clamp=(a,l,h)=>Math.min(h,Math.max(l,a));
 const position = id => {const n=board.nodes[id];return [ (n.x-590)/100, (n.y-628)/100 ];};
 const wpos = (id,y=.64) => {const p=position(id);return [p[0],y,p[1]];};
 const ccol=(name)=>rgb(bridge.colors()[name]||'#ffffff');
-const GL_VERTEX = `attribute vec3 aP; attribute vec3 aN; attribute vec3 aC; attribute float aE;
+// GLSL ES 1.00 requires a uniform (and each varying) to use compatible float precision
+// in both shader stages. Fragment defaults to mediump; match it explicitly here.
+const GL_VERTEX = `precision mediump float;
+attribute vec3 aP; attribute vec3 aN; attribute vec3 aC; attribute float aE;
 uniform vec3 uRight,uUp,uEye,uFocus,uTranslate,uTint;uniform vec2 uHalf;
 varying vec3 vN,vC,vP;varying float vE;
 void main(){vec3 p=aP+uTranslate;vec3 d=p-uFocus;
@@ -43,7 +52,9 @@ if(gl){try{
  uniform=Object.fromEntries(['uRight','uUp','uEye','uFocus','uTranslate','uTint','uHalf'].map(n=>[n,gl.getUniformLocation(program,n)]));
  staticBuffer=gl.createBuffer();sphereBuffer=gl.createBuffer();
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
-}catch(e){console.warn('Marble Summit WebGL init:',e);program=null;}}
+}catch(e){console.warn('Marble Summit WebGL init:',e);startupError=String(e?.message||e);program=null;}}
+const useSoftware=!(gl&&program&&ctx)&&!!(softCtx&&ctx);
+const inputCanvas=useSoftware?softCanvas:canvas;
 class Mesh {
  constructor(){this.v=[];}
  tri(a,b,c,color,em=0){let n=norm(cross(sub(b,a),sub(c,a)));if(Math.abs(a[1]-b[1])<.000001&&Math.abs(a[1]-c[1])<.000001&&n[1]<0)n=mul(n,-1);for(const p of [a,b,c])this.v.push(...p,...n,...color,em);}
@@ -111,13 +122,15 @@ function makeSphere(){const m=new Mesh();m.sphere(.183,15,22);const data=new Flo
 function bindBuffer(buffer){gl.bindBuffer(gl.ARRAY_BUFFER,buffer);const stride=40;
  for(const [loc,n,offset] of [[attrib.p,3,0],[attrib.n,3,12],[attrib.c,3,24],[attrib.e,1,36]]){gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,n,gl.FLOAT,false,stride,offset);}}
 function camBasis(){const [yaw,elev]=[CAM.yaw,CAM.elevation];const eye=norm(V(Math.sin(yaw)*Math.cos(elev),Math.sin(elev),Math.cos(yaw)*Math.cos(elev)));
- const right=norm(cross(V(0,1,0),eye)),up=norm(cross(eye,right));const aspect=canvas.clientWidth/Math.max(1,canvas.clientHeight);
+ const right=norm(cross(V(0,1,0),eye)),up=norm(cross(eye,right));const aspect=Math.max(1,viewW)/Math.max(1,viewH);
  const halfH=Math.max(6.90,7.8/aspect)/CAM.zoom;return {eye,right,up,halfH,halfW:halfH*aspect,focus:V(CAM.cx,0,CAM.cz)};}
 let basis=null,viewW=0,viewH=0;
 function project(p){if(!basis)return {x:-999,y:-999};const d=sub(p,basis.focus);return{x:(.5+dot(d,basis.right)/(2*basis.halfW))*viewW,y:(.5-dot(d,basis.up)/(2*basis.halfH))*viewH};}
-function resize(){const r=canvas.getBoundingClientRect(),w=Math.max(1,Math.round(r.width)),h=Math.max(1,Math.round(r.height));viewW=w;viewH=h;
- const ratio=Math.min(window.devicePixelRatio||1,1.5),dw=Math.floor(w*ratio),dh=Math.floor(h*ratio);
- if(canvas.width!==dw||canvas.height!==dh){canvas.width=dw;canvas.height=dh;gl.viewport(0,0,dw,dh);}if(overlay.width!==w||overlay.height!==h){overlay.width=w;overlay.height=h;}}
+function resize(){const r=inputCanvas.getBoundingClientRect(),w=Math.max(1,Math.round(r.width)),h=Math.max(1,Math.round(r.height));viewW=w;viewH=h;
+ if(useSoftware){if(softCanvas.width!==w||softCanvas.height!==h){softCanvas.width=w;softCanvas.height=h;}}
+ else {const ratio=Math.min(window.devicePixelRatio||1,1.5),dw=Math.floor(w*ratio),dh=Math.floor(h*ratio);
+ if(canvas.width!==dw||canvas.height!==dh){canvas.width=dw;canvas.height=dh;gl.viewport(0,0,dw,dh);}}
+ if(overlay.width!==w||overlay.height!==h){overlay.width=w;overlay.height=h;}}
 function drawMesh(buffer,count,translate=[0,0,0],tint=[1,1,1]){bindBuffer(buffer);gl.uniform3fv(uniform.uTranslate,translate);gl.uniform3fv(uniform.uTint,tint);gl.drawArrays(gl.TRIANGLES,0,count);}
 function marblePosition(m,t){const n=board.nodes[m.location];if(!n)return V(0,.64,0);
  if(anim && anim.marbleId===m.id){const dt=(t-anim.start)/anim.duration;if(dt<1){const steps=[anim.from,...anim.path];const q=clamp(dt,0,1)*(steps.length-1),i=Math.min(steps.length-2,Math.floor(q)),f=q-i;
@@ -158,15 +171,64 @@ function drawLabels(t){if(!ctx)return;ctx.clearRect(0,0,viewW,viewH);const shot=
  }
  if(anim?.captureMarble){const frac=(t-anim.start)/anim.duration;if(frac>.65&&frac<1.6){const p=project(wpos(anim.captureFrom,.9));ctx.font='950 21px system-ui';ctx.fillStyle='#ffdb94';ctx.strokeStyle='#311621';ctx.lineWidth=4;ctx.strokeText('KNOCKOUT!',p.x,p.y-32);ctx.fillText('KNOCKOUT!',p.x,p.y-32);}}
 }
+
+// CPU-based perspective renderer for managed school browsers without WebGL.
+// This uses the SAME board positions and camera projection, never separate game logic.
+const SW_HEX=[[590,101],[1046.4,364.5],[1046.4,891.5],[590,1155],[133.6,891.5],[133.6,364.5]].map(([x,z])=>[(x-590)/100,(z-628)/100]);
+function swPath(points){softCtx.beginPath();points.forEach((v,i)=>{const p=project(v);i?softCtx.lineTo(p.x,p.y):softCtx.moveTo(p.x,p.y);});softCtx.closePath();}
+function swDisc(x,z,y,r){const pp=[];for(let i=0;i<24;i++){let a=i/24*Math.PI*2;pp.push(V(x+Math.cos(a)*r,y,z+Math.sin(a)*r));}swPath(pp);}
+function swColor(owner){return bridge.colors()[owner]||'#8ce7ff';}
+function swRail(id1,id2,color,width=2.0){const a=project(wpos(id1,.37)),b=project(wpos(id2,.37));softCtx.beginPath();softCtx.moveTo(a.x,a.y);softCtx.lineTo(b.x,b.y);softCtx.strokeStyle=color;softCtx.lineWidth=width;softCtx.globalAlpha=.90;softCtx.shadowColor=color;softCtx.shadowBlur=7;softCtx.stroke();softCtx.shadowBlur=0;softCtx.globalAlpha=1;}
+function drawSoftware(t){const s=softCtx,w=viewW,h=viewH;
+ const bg=s.createRadialGradient(w*.50,h*.40,10,w*.5,h*.5,Math.max(w,h)*.68);
+ bg.addColorStop(0,'#25405c');bg.addColorStop(.60,'#101c2e');bg.addColorStop(1,'#030815');s.fillStyle=bg;s.fillRect(0,0,w,h);
+ const eye=basis.eye;
+ // Render thickness around the board in depth order before the playing surface.
+ const faces=SW_HEX.map((a,i)=>{const b=SW_HEX[(i+1)%6];return {a,b,depth:dot(V((a[0]+b[0])/2,0,(a[1]+b[1])/2),eye),i};}).sort((a,b)=>a.depth-b.depth);
+ for(const f of faces){swPath([V(f.a[0],-.3,f.a[1]),V(f.b[0],-.3,f.b[1]),V(f.b[0],.29,f.b[1]),V(f.a[0],.29,f.a[1])]);s.fillStyle='#152c44';s.fill();s.strokeStyle=swColor(board.players[f.i].name);s.globalAlpha=.7;s.lineWidth=1.3;s.stroke();s.globalAlpha=1;}
+ swPath(SW_HEX.map(v=>V(v[0],.29,v[1])));s.fillStyle='#0d1d30';s.fill();s.strokeStyle='#78b4d3';s.lineWidth=2.5;s.shadowColor='#2d87ae';s.shadowBlur=8;s.stroke();s.shadowBlur=0;
+ for(let i=0;i<6;i++){const a=SW_HEX[i],prev=SW_HEX[(i+5)%6],b=SW_HEX[(i+1)%6],left=[(a[0]+prev[0])/2,(a[1]+prev[1])/2],right=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+ swPath([V(0,.297,0),V(left[0],.297,left[1]),V(a[0],.297,a[1]),V(right[0],.297,right[1])]);s.globalAlpha=.10;s.fillStyle=swColor(board.players[i].name);s.fill();s.globalAlpha=1;}
+ // Bases outside the hexagon, two marbles to either side of each corner.
+ for(const player of board.players){let pts=player.base.map(position);let cx=pts.reduce((a,p)=>a+p[0],0)/4,cz=pts.reduce((a,p)=>a+p[1],0)/4;
+ const rad=Math.max(...pts.map(p=>Math.hypot(p[0]-cx,p[1]-cz)))+.28;
+ swDisc(cx,cz,.30,rad);s.fillStyle='#15283c';s.fill();s.strokeStyle=swColor(player.name);s.lineWidth=2.8;s.shadowColor=swColor(player.name);s.shadowBlur=8;s.stroke();s.shadowBlur=0;}
+ for(const player of board.players){const col=swColor(player.name),path=player.outer_path_sector;
+ for(let i=0;i<path.length;i++)swRail(path[i],i+1<path.length?path[i+1]:board.nodes[path[i]].main_next,col,2.3);
+ swRail(player.home_entry,player.home[0],col,2.7);for(let j=0;j<3;j++)swRail(player.home[j],player.home[j+1],col,2.7);}
+ const stars=board.geometry.star_ring_clockwise;
+ for(let i=0;i<stars.length;i++)swRail(stars[i],stars[(i+1)%stars.length],'#67efff',3.0);
+ for(const star of stars)swRail(star,'CENTER','#8a77de',1.0);
+ // Recessed holes and glowing rims share the exact positions with gameplay.
+ const sockets=Object.entries(board.nodes).map(([id,n])=>({id,n,dist:dot(wpos(id,.4),eye)})).sort((a,b)=>a.dist-b.dist);
+ for(const {id,n} of sockets){const [x,z]=position(id),star=n.type==='star',center=n.type==='center',special=n.special;
+ const r=center?.255:star?.19:special?.18:.16;
+ let rim=star?'#70f4ff':center?'#d4adff':special==='start'?'#75ffc4':special==='home_entry'?'#ffce7f':n.owner?swColor(n.owner):'#69849c';
+ if(n.type==='track'&&!special)rim='#587b98';
+ swDisc(x,z,.435,r+.038);s.fillStyle='#020914';s.fill();s.strokeStyle=rim;s.lineWidth=2.0;s.globalAlpha=star||center||special?1:.76;s.shadowColor=rim;s.shadowBlur=star||center||special?8:3;s.stroke();s.shadowBlur=0;s.globalAlpha=1;
+ swDisc(x,z,.44,r-.018);s.fillStyle=center?'#32224c':star?'#16384b':'#06111f';s.fill();}
+ const shot=bridge.snapshot();if(shot){const ordered=[...shot.marbles].sort((a,b)=>dot(marblePosition(a,t),eye)-dot(marblePosition(b,t),eye));
+ for(const marble of ordered){const pos=marblePosition(marble,t),screen=project(pos);
+ const a=project(add(pos,V(.18,0,0))),b=project(add(pos,V(0,.18,0))),rad=Math.max(4,Math.hypot(a.x-screen.x,a.y-screen.y),Math.hypot(b.x-screen.x,b.y-screen.y));
+ const shadow=project(V(pos[0],.44,pos[2]));s.beginPath();s.ellipse(shadow.x+2,shadow.y+2,rad*1.05,rad*.52,0,0,Math.PI*2);s.fillStyle='#020814b8';s.fill();
+ const c=swColor(marble.owner);const g=s.createRadialGradient(screen.x-rad*.3,screen.y-rad*.4,1,screen.x,screen.y,rad*1.2);
+ g.addColorStop(0,'#ffffff');g.addColorStop(.16,c);g.addColorStop(.62,c);g.addColorStop(1,'#101725');s.beginPath();s.arc(screen.x,screen.y,rad,0,Math.PI*2);s.fillStyle=g;s.shadowColor=c;s.shadowBlur=4;s.fill();s.shadowBlur=0;s.strokeStyle='#e7f4ff';s.lineWidth=.8;s.stroke();}
+ }
+}
+
 function render(t){if(anim&&t>=anim.start+anim.duration*1.3){const done=anim.done;anim=null;done?.();}
- if(!window.Marble3D?.active||!gl||!program||document.hidden){requestAnimationFrame(render);return;}
- const palette=Object.values(bridge.colors()).join(';');if(palette!==lastPalette){lastPalette=palette;createStatic();}
+ if(!window.Marble3D?.active||document.hidden){requestAnimationFrame(render);return;}
+ if(useSoftware&&t-lastClock<32){requestAnimationFrame(render);return;}lastClock=t;
+ const palette=Object.values(bridge.colors()).join(';');
+ if(!useSoftware && palette!==lastPalette){lastPalette=palette;createStatic();}
  resize();basis=camBasis();lastShot=bridge.snapshot();
+ if(useSoftware){drawSoftware(t);}else{
  gl.clearColor(.025,.057,.106,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(program);
  gl.uniform3fv(uniform.uRight,basis.right);gl.uniform3fv(uniform.uUp,basis.up);gl.uniform3fv(uniform.uEye,basis.eye);gl.uniform3fv(uniform.uFocus,basis.focus);gl.uniform2fv(uniform.uHalf,[basis.halfW,basis.halfH]);
  drawMesh(staticBuffer,staticCount);
  if(lastShot){for(const m of lastShot.marbles){let p=marblePosition(m,t),color=ccol(m.owner);
  drawMesh(sphereBuffer,sphereCount,p,color);}}
+ }
  drawLabels(t);
  requestAnimationFrame(render);
 }
@@ -177,21 +239,21 @@ function pick(x,y){const shot=bridge.snapshot();if(!shot||bridge.busy()||shot.ph
  const dist=Math.hypot(x-p.x,y-p.y);if(dist<minSize&&(!best||dist<best.d))best={type:'route',id:move.id,d:dist};}if(best)return best;}
  const movable=new Set(moves.map(m=>m.marbleId));let result=null;for(const m of shot.marbles){if(!movable.has(m.id))continue;const p=project(wpos(m.location,.67)),d=Math.hypot(x-p.x,y-p.y);if(d<Math.max(22,viewW/60)&&(!result||d<result.d))result={type:'marble',id:m.id,d};}return result;
 }
-function relativeXY(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+function relativeXY(e){const r=inputCanvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
 const pointer = {primary:null, secondary:null};
-function wireCanvas(){canvas.addEventListener('pointerdown',e=>{if(e.button!==0&&e.pointerType==='mouse')return;canvas.setPointerCapture(e.pointerId);const p=relativeXY(e);pointer.primary={id:e.pointerId,x:p.x,y:p.y,startX:p.x,startY:p.y,dragged:false,shift:e.shiftKey};canvas.style.cursor='grabbing';});
- canvas.addEventListener('pointermove',e=>{const p=relativeXY(e);if(pointer.primary?.id===e.pointerId){let a=pointer.primary,dx=p.x-a.x,dy=p.y-a.y;if(Math.hypot(p.x-a.startX,p.y-a.startY)>5)a.dragged=true;
+function wireCanvas(){inputCanvas.addEventListener('pointerdown',e=>{if(e.button!==0&&e.pointerType==='mouse')return;inputCanvas.setPointerCapture(e.pointerId);const p=relativeXY(e);pointer.primary={id:e.pointerId,x:p.x,y:p.y,startX:p.x,startY:p.y,dragged:false,shift:e.shiftKey};inputCanvas.style.cursor='grabbing';});
+ inputCanvas.addEventListener('pointermove',e=>{const p=relativeXY(e);if(pointer.primary?.id===e.pointerId){let a=pointer.primary,dx=p.x-a.x,dy=p.y-a.y;if(Math.hypot(p.x-a.startX,p.y-a.startY)>5)a.dragged=true;
  if(a.dragged){if(a.shift){CAM.cx-=dx/viewW*2*basis.halfW;CAM.cz+=dy/viewH*2*basis.halfH;}else{CAM.yaw=clamp(CAM.yaw+dx*.006,-Math.PI,Math.PI);CAM.elevation=clamp(CAM.elevation+dy*.006,.48,Math.PI/2-.005);}}
  a.x=p.x;a.y=p.y;
- }else{hover=pick(p.x,p.y);canvas.style.cursor=hover?'pointer':'grab';}});
- canvas.addEventListener('pointerup',e=>{const p=relativeXY(e),a=pointer.primary;if(a?.id===e.pointerId){if(!a.dragged){const chosen=pick(p.x,p.y);if(chosen?.type==='marble')bridge.selectMarble(chosen.id);if(chosen?.type==='route')bridge.selectRoute(chosen.id);}pointer.primary=null;}canvas.style.cursor='grab';});
- canvas.addEventListener('pointercancel',()=>{pointer.primary=null;canvas.style.cursor='grab';});
- canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?.90:1.10);},{passive:false});
+ }else{hover=pick(p.x,p.y);inputCanvas.style.cursor=hover?'pointer':'grab';}});
+ inputCanvas.addEventListener('pointerup',e=>{const p=relativeXY(e),a=pointer.primary;if(a?.id===e.pointerId){if(!a.dragged){const chosen=pick(p.x,p.y);if(chosen?.type==='marble')bridge.selectMarble(chosen.id);if(chosen?.type==='route')bridge.selectRoute(chosen.id);}pointer.primary=null;}inputCanvas.style.cursor='grab';});
+ inputCanvas.addEventListener('pointercancel',()=>{pointer.primary=null;inputCanvas.style.cursor='grab';});
+ inputCanvas.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?.90:1.10);},{passive:false});
  // Touch pinch uses native pointer events; primary pointer drag remains orbital.
  let contacts=new Map(),lastDistance=0;
- canvas.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;contacts.set(e.pointerId,relativeXY(e));if(contacts.size===2){pointer.primary=null;lastDistance=0;}});
- canvas.addEventListener('pointermove',e=>{if(!contacts.has(e.pointerId))return;contacts.set(e.pointerId,relativeXY(e));if(contacts.size===2){const pts=[...contacts.values()],d=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);if(lastDistance)zoom(d/lastDistance);lastDistance=d;}});
- const end=e=>{contacts.delete(e.pointerId);if(contacts.size<2)lastDistance=0;};canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);
+ inputCanvas.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;contacts.set(e.pointerId,relativeXY(e));if(contacts.size===2){pointer.primary=null;lastDistance=0;}});
+ inputCanvas.addEventListener('pointermove',e=>{if(!contacts.has(e.pointerId))return;contacts.set(e.pointerId,relativeXY(e));if(contacts.size===2){const pts=[...contacts.values()],d=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);if(lastDistance)zoom(d/lastDistance);lastDistance=d;}});
+ const end=e=>{contacts.delete(e.pointerId);if(contacts.size<2)lastDistance=0;};inputCanvas.addEventListener('pointerup',end);inputCanvas.addEventListener('pointercancel',end);
 }
 function zoom(mult){CAM.zoom=clamp(CAM.zoom*mult,.67,2.8);}
 function home(){CAM.yaw=0;CAM.elevation=Math.PI*.32;CAM.zoom=1.03;CAM.cx=CAM.cz=0;CAM.mode='angled';updateControls();}
@@ -213,10 +275,10 @@ function initDice(){const shell=$('diceShell');if(!shell)return;const cube=docum
 function rollDice(n,play=true){const cube=$('arcadeDie');if(!cube)return;
  const orientations={1:[-17,-18],2:[-17,-108],3:[-17,162],4:[-17,72],5:[-105,-18],6:[73,-18]};const [x,y]=orientations[n]||orientations[1];const spin=play?720+Math.floor(Math.random()*2)*360:0;
  cube.style.transform=`rotateX(${x+spin}deg) rotateY(${y+(play?720:0)}deg)`;if(play)sound('roll');lastRoll=n;}
-const view=window.Marble3D={active:!!(gl&&program&&ctx),supported:!!(gl&&program&&ctx),
+const view=window.Marble3D={active:!!((gl&&program&&ctx)||useSoftware),supported:!!((gl&&program&&ctx)||useSoftware),renderer:useSoftware?'software':(gl&&program?'webgl':'none'),startupError,
  sync(){ /* the renderer reads engine state on every frame */ }, zoom, reset:home, overhead, angled:home, animateMove,
  rollDie:rollDice,
- setMode(mode){if(mode==='3d'&&!view.supported)return false;view.active=mode==='3d';document.body.classList.toggle('show-3d',view.active);$('view3d')?.setAttribute('aria-pressed',String(view.active));$('view2d')?.setAttribute('aria-pressed',String(!view.active));return true;},
+ setMode(mode){if(mode==='3d'&&!view.supported)return false;view.active=mode==='3d';document.body.classList.toggle('show-3d',view.active);document.body.classList.toggle('software-3d',useSoftware);$('view3d')?.setAttribute('aria-pressed',String(view.active));$('view2d')?.setAttribute('aria-pressed',String(!view.active));return true;},
  sound(kind){sound(kind);}, get camera(){return {...CAM};},
  boardPoint(id, height=.72){return project(wpos(id,height));},
  moveTargets(){const selected=bridge.selected();const relevant=bridge.moves().filter(m=>m.marbleId===selected),grouped={};for(const m of relevant)(grouped[m.to]||=[]).push(m);
@@ -229,7 +291,7 @@ $('view2d')?.addEventListener('click',()=>view.setMode('2d'));
 $('cameraTop')?.addEventListener('click',overhead);
 $('cameraAngle')?.addEventListener('click',home);
 $('soundButton')?.addEventListener('click',()=>{audioOn=!audioOn;$('soundButton').textContent=audioOn?'♫ Sound on':'♪ Sound off';$('soundButton').setAttribute('aria-pressed',String(audioOn));if(audioOn)sound('bonus');});
-if(view.supported){makeSphere();createStatic();view.setMode('3d');requestAnimationFrame(render);}else{view.setMode('2d');
+if(view.supported){if(!useSoftware){makeSphere();createStatic();}view.setMode('3d');if(useSoftware){const b=$('view3d');if(b)b.title='3D Lite: software perspective renderer (WebGL unavailable)';const note=$('renderModeNote');if(note){note.hidden=false;note.textContent='3D Lite · software graphics';note.title='WebGL was unavailable. 3D perspective remains playable using a CPU renderer.';}const hint=$('stageHint');if(hint)hint.textContent='3D Lite is active: your browser blocked WebGL, so perspective is rendered in software. Drag to orbit, scroll to zoom, or choose 2D for precision.';}requestAnimationFrame(render);}else{view.setMode('2d');
  for(const id of ['view3d','cameraTop','cameraAngle']){const el=$(id);if(el){el.disabled=true;el.title='3D unavailable on this browser or device';}}
  const s=$('boardQuickStatus');if(s)s.textContent='WebGL unavailable — precision 2D board active';
  const hint=$('stageHint');if(hint)hint.textContent='3D graphics unavailable. The complete 2D precision game is ready to play.';

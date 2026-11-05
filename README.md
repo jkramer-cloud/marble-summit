@@ -1,11 +1,11 @@
-# Marble Summit v3.0 — Neon Arcade
+# Marble Summit v3.2 — WebGL Shader Fix + 3D Compatibility
 
 A playable, six-sector marble-race board for GitHub Pages. **Phase 3 replaces the visual presentation, not the rules.** The original Phase 2.1 engine, board coordinates, all 139 fixed positions, and saved-game key are retained unchanged.
 
 ## Publish to your existing GitHub repository
 
 1. Open `jkramer-cloud/marble-summit` on GitHub.
-2. Extract `MARBLE_SUMMIT_PHASE3_3D_ARCADE_GITHUB_READY.zip` on your computer.
+2. Extract the v3.2 WebGL fix ZIP on your computer.
 3. Upload **all files and folders from inside the ZIP** to the **root** of the existing repository, replacing matching files. In particular, add the new `arcade3d.js` alongside `index.html`, `style.css`, `app.js`, `board-data.js`, and `engine.js`.
 4. Commit to the branch used by GitHub Pages (usually `main`). Your existing Learning Hub link still works.
 5. Open the site and use `Ctrl + Shift + R` to refresh after deployment.
@@ -23,26 +23,30 @@ This is a static site: no npm, build tools, server, API key, game account, outsi
 
 ## Camera and accessibility
 
-- **3D** is the default on devices with WebGL graphics support. **2D** switches back to the approved precision board without altering the match.
+- **3D** is the default. Browsers with working WebGL get GPU rendering; browsers without WebGL automatically use **3D Lite**, a Canvas 2D-based software perspective view. **2D** switches to the approved precision board without altering the match.
 - Use the **angled** or **overhead** camera buttons; drag on the 3D board to orbit; **Shift + drag** to pan; use wheel, pinch or `+` / `−` buttons to zoom; crosshair resets the view.
 - The expanded-board button increases the playing area and provides an on-board Roll button.
 - Dark charcoal surfaces, illuminated player sectors, bright sockets and marbles, and **S/H/star/center symbols** help distinguish positions beyond color alone.
 - Sound is **off by default** for classroom use. Click **Sound off** to turn on dice, movement, capture and win audio. The browser will ask for no special permissions.
-- Reduced-motion preference skips the marble animation. If WebGL is blocked, the full 2D game remains available.
+- Reduced-motion preference skips the marble animation. If WebGL is blocked, 3D Lite keeps the angled view and direct interaction available; the full 2D precision board remains an option.
+
+## If 3D switches to 3D Lite
+
+If hardware WebGL fails even on a capable computer, check the browser Console for the renderer error. An earlier version had a GLSL precision mismatch that prevented GPU 3D initialization; this is fixed in v3.2. Chrome can also block hardware graphics acceleration. The game will still provide an interactive 3D perspective in 3D Lite mode. To check the device, open `chrome://gpu` and look for the **WebGL** line. On personal Windows computers, also check Chrome **Settings → System → Use graphics acceleration when available**. Managed school devices may restrict these settings. Do not change school-managed policies; software 3D and 2D modes work without WebGL.
 
 ## Reliability notes
 
 - No external graphics dependencies or runtime network requests.
 - The three Phase 2.1 gameplay/data files (`board-data.js`, `engine.js`, `movement-engine.mjs`) and `board-geometry.json` are kept byte-for-byte intact.
 - Automated regression testing: `node --test tests/*.test.*`.
-- The 3D canvas uses a lightweight native WebGL renderer. Interactive controller checks were run using a simulated WebGL context; the target environment prevented rendering WebGL pixels during QA. Verify the final 3D appearance and GPU performance on one school Chromebook/PC before distributing the update to all students.
+- WebGL initialization is retried with standard, compatibility, and WebGL2 contexts. The GPU shaders now use matching `mediump` precision in both stages, fixing the reported `uEye` link error. If no context or shader is available, the software perspective board is used automatically; it has been tested in Chromium with WebGL unavailable, including a complete BASE release and direct destination click. Actual GPU rendering is still hardware-dependent, so verify WebGL presentation on a school computer.
 - You can switch to **2D** at any point. Switching during an animation will not block completion of that move.
 
 ## Project files
 
 - `index.html` — webpage, game UI, setup, help, view controls
 - `style.css` — neon arcade layout, contrast/accessibility, physical CSS six-faced die
-- `arcade3d.js` — new self-contained WebGL meshes, camera, rendered marbles, click targets, animations, sound
+- `arcade3d.js` — WebGL and software 3D meshes, camera, rendered marbles, click targets, animations, sound
 - `app.js` — original game UI with a small view-bridge added; existing game/save logic preserved
 - `board-data.js`, `engine.js`, `movement-engine.mjs`, `board-geometry.json` — approved Phase 2.1 rules and coordinates, unchanged
 - `tests/` — engine, UI, geometry and Phase 3 integration checks

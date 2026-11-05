@@ -1,3 +1,19 @@
+# v3.2 — WebGL shader precision fix
+
+- Corrected the reported GPU shader link failure: `Precisions of uniform uEye differ between VERTEX and FRAGMENT shaders`.
+- The vertex and fragment shaders now declare matching `mediump float` precision in WebGL 1 (including camera uniforms and varyings).
+- Keeps the v3.1 interactive 3D Lite fallback for devices that cannot start hardware WebGL.
+- No changes to gameplay, 139-position geometry, board colors, saved games, or core movement engine.
+- Added automated shader-precision regression tests.
+
+# v3.1 — 3D compatibility / software fallback
+
+- 3D button no longer disabled on devices that block WebGL but allow ordinary Canvas 2D.
+- Added an interactive software perspective board (3D Lite), with the same board positions, colors, camera orbit and zoom, animated captures, and click targets.
+- Kept the original GPU WebGL renderer on supported devices and kept the 2D precision view.
+- Added visible 3D Lite mode indication and Chrome graphics support guidance.
+- Preserved the Phase 2.1 engine, board geometry, save keys and established rules.
+
 # Marble Summit — v3.0 Neon Arcade
 
 ## New
