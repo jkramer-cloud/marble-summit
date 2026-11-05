@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080d1a">
+<meta name="description" content="Marble Summit: a precise, playable six-sector marble race with star shortcuts, captures, and an arcade neon board.">
+<title>Marble Summit | Precision Play</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+<div class="app-shell">
+<header class="site-header">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">✦</div><div><div class="eyebrow">ARCADE TABLETOP COLLECTION</div><h1>MARBLE <span>SUMMIT</span></h1></div></div>
+  <div class="header-actions"><span class="build-tag">PHASE 3.1 · 3D COMPATIBILITY</span><button type="button" id="howButton" class="subtle-button">How to play</button><button type="button" id="newGameBtn" class="subtle-button">New game</button></div>
+</header>
+<main class="game-layout">
+<section class="board-column">
+ <div class="board-panel">
+   <div class="board-topline"><div><div class="panel-overline">TACTICAL ARENA</div><h2>The Summit comes alive.</h2></div><div class="board-tools"><div class="view-switch" role="group" aria-label="Board presentation"><button type="button" id="view3d" aria-pressed="true">3D</button><button type="button" id="view2d" aria-pressed="false">2D</button></div><button id="cameraAngle" aria-pressed="true" title="Angled 3D view" aria-label="Angled 3D camera">◩</button><button id="cameraTop" aria-pressed="false" title="Overhead 3D view" aria-label="Overhead 3D camera">▣</button><button id="focusBoard" aria-label="Expand board, keep controls accessible" aria-pressed="false" title="Expand board for easier clicking">⛶</button><button aria-label="Zoom out" id="zoomOut" title="Zoom out">−</button><button aria-label="Reset map view" id="zoomReset" title="Reset zoom">⌖</button><button aria-label="Zoom in" id="zoomIn" title="Zoom in">+</button></div></div>
+   <div id="boardStage" class="board-stage" aria-label="Interactive six-player game board. Select your glowing marble after rolling." role="region"><canvas id="arcadeCanvas" aria-label="WebGL 3D game board, click a marble, then its numbered target. Drag to rotate; wheel to zoom." tabindex="0"></canvas><canvas id="softwareCanvas" aria-label="Software 3D perspective game board. Click a marble, then a numbered target; drag to rotate." tabindex="0"></canvas><canvas id="arcadeLabels" aria-hidden="true"></canvas><svg id="boardSvg" viewBox="27 5 1125 1246" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Marble Summit game board"></svg></div><div class="stage-hint" id="stageHint">Roll the die, select your marble, and click its numbered landing pad.</div>
+   <div id="boardQuickHud" class="board-quick-hud" aria-live="polite"><span id="boardQuickStatus">Board view</span><button id="boardQuickRoll" type="button" class="primary-button">ROLL DIE</button></div><div class="board-legend"><div><i class="legend-dot special-start"></i>Start</div><div><i class="legend-dot special-entry"></i>Home entrance</div><div><i class="legend-dot special-star"></i>Star shortcut</div><div><i class="legend-dot special-center"></i>Center portal</div><span id="renderModeNote" class="render-mode-note" role="status" hidden></span><span class="board-tip">3D: drag to orbit · mouse wheel/pinch to zoom · Shift+drag to pan</span></div>
+ </div>
+ <div class="board-footer"><span class="status-light"></span><span id="footerStatus">139 precision-aligned spaces · movement graph active</span><span class="foot-note">Every marble follows the exact route selected</span></div>
+</section>
+<aside class="sidebar">
+  <section class="card turn-card"><div class="panel-overline">CURRENT TURN <span id="turnNumber">01</span></div><div id="activePlayer" class="active-player"><i class="player-indicator"></i><div><strong>Red</strong><small>Ready to roll</small></div></div>
+  <div class="dice-row"><div id="diceShell" class="dice-shell" aria-label="Die not rolled"><div id="dicePips" class="dice-pips"></div></div><div class="dice-controls"><button id="rollButton" class="primary-button" type="button">ROLL DIE <span class="dice-key">SPACE</span></button><div id="diceCaption" class="dice-caption">A 1 or 6 launches a marble</div></div></div>
+  <button type="button" id="soundButton" class="sound-button" aria-pressed="false">♪ Sound off</button><div id="turnMessage" class="turn-message" role="status" aria-live="polite">The race begins here.</div></section>
+  <section class="card moves-card"><div class="card-heading"><div><div class="panel-overline">MOVE SELECTOR</div><h3>Choose your route</h3></div><span id="moveCount" class="tiny-chip">0 options</span></div>
+   <div id="moveInstructions" class="instruction">Choose directly on the board: highlighted marble → numbered destination. The list below is optional.</div>
+   <div id="pieceSelector" class="piece-selector"></div>
+   <div id="routeList" class="route-list"></div>
+  </section>
+  <section class="card standings-card"><div class="card-heading"><div><div class="panel-overline">RACE PROGRESS</div><h3>Marbles in play</h3></div><span id="playerCount" class="tiny-chip">2 players</span></div><div id="scoreList" class="score-list"></div></section>
+  <section class="card history-card"><div class="card-heading"><div><div class="panel-overline">GAME JOURNAL</div><h3>Recent turns</h3></div><button id="saveButton" type="button" class="text-button">Save now</button></div><div id="eventLog" class="event-log"></div><div class="save-indicator" id="saveStatus">Game saves automatically on this device</div></section>
+</aside>
+</main>
+<footer class="site-footer">MARBLE SUMMIT <span>•</span> PRECISION ENGINE V2.1 <span>•</span> TRUE 3D ARCADE PRESENTATION <span>•</span> 2D PRECISION MODE AVAILABLE</footer>
+</div>
+<div class="modal-backdrop" id="setupModal" role="dialog" aria-modal="true" aria-labelledby="setupTitle" hidden><div class="modal setup-dialog"><div class="modal-deco">✦</div><div class="panel-overline">SET UP THE TABLE</div><h2 id="setupTitle">Choose your challengers</h2><p>Play together on one screen, or add computer-controlled opponents. Your chosen marble colors also light up the matching BASE, track and HOME lanes. All six sectors remain symmetrical.</p><div class="setup-prompt">Number of players</div><div id="countChoices" class="count-choices"></div><div class="setup-prompt">Players, marble colors, and opponents</div><div id="setupPlayers" class="setup-players"></div><div class="modal-actions"><button id="resumeButton" class="subtle-button" type="button" hidden>Resume saved game</button><button id="startButton" class="primary-button" type="button">START GAME →</button></div><div class="setup-note">Choosing a color swaps it with the current owner, so all six colors remain distinct. Match progress saves locally; Phase 2.1 uses a new save slot because START and HOME positions changed.</div></div></div>
+<div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden><div class="modal help-dialog"><button type="button" id="closeHelp" class="modal-close" aria-label="Close instructions">✕</button><div class="panel-overline">FIELD GUIDE</div><h2 id="helpTitle">How to play Marble Summit</h2><div class="rules-grid"><div><b>01 · Get in the game</b><p>Roll a <strong>1 or 6</strong> to release a marble from BASE onto your START space. A successful 6 gives an extra roll.</p></div><div><b>02 · Move directly on the board</b><p>In 3D, click a glowing marble, then its numbered landing target. Drag to rotate, use the camera buttons for overhead/angled views, and switch to 2D for precision if you prefer. The sidebar list is optional.</p></div><div><b>03 · Take the outer loop</b><p>Move clockwise using the <strong>complete</strong> die value. You can pass opponents, but you cannot pass or land on your own marble.</p></div><div><b>04 · Capture rivals</b><p>Land exactly on an opponent to send their marble back to BASE. Capture is optional; choose any legal route.</p></div><div><b>05 · Use the star shortcuts</b><p>If you start a turn on a star, travel clockwise along the star ring or exit toward a different sector to chase opponents. Roll exactly 1 to enter CENTER.</p></div><div><b>06 · Center portal</b><p>From CENTER, roll exactly <strong>1</strong> on a later turn to exit to any star.</p></div><div><b>07 · Fill HOME</b><p>Once a marble has completed its required trip, it may turn into its own HOME lane or keep circulating. HOME marbles can move farther inward on future exact rolls.</p></div></div><div class="rule-callout">A 6 that has no legal move <strong>does not</strong> earn another roll. First to get all four marbles HOME wins.</div><button id="helpDone" class="primary-button" type="button">BACK TO GAME</button></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="board-data.js"></script><script src="engine.js"></script><script src="app.js"></script><script src="arcade3d.js"></script>
+</body>
+</html>
