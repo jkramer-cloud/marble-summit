@@ -3,3 +3,28 @@
 @media(max-width:900px){.game-layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.turn-card,.moves-card{grid-column:span 1}.board-stage{aspect-ratio:1020/1120;max-height:800px}.board-tip{margin-left:0}.site-header{gap:9px}.board-legend{gap:10px}}
 @media(max-width:640px){.app-shell{padding:11px}.site-header{align-items:flex-start;gap:10px;margin-bottom:13px}.brand{gap:9px}.brand-mark{height:43px;width:43px;border-radius:12px;font-size:25px}.brand h1{font-size:22px}.eyebrow{font-size:8px;letter-spacing:1.3px}.header-actions{gap:5px}.header-actions button{font-size:10px;padding:8px 7px}.board-panel{border-radius:13px}.board-topline{padding:13px 12px 7px}.board-topline h2{font-size:16px}.panel-overline{font-size:9px}.board-tools button{width:31px;height:31px;font-size:18px}.board-stage{margin:0 3px;border-radius:10px;min-height:320px}.board-legend{font-size:10px;padding:10px;gap:8px}.board-footer{font-size:10px}.foot-note{display:none}.sidebar{grid-template-columns:1fr}.card{padding:15px}.stage-hint{font-size:9px;padding:6px 10px;bottom:7px}.setup-players,.rules-grid{grid-template-columns:1fr}.modal{padding:21px}.modal-actions{flex-direction:column-reverse;align-items:stretch}.modal-actions button{width:100%}.brand h1 span{display:block}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+/* Phase 2.1: fit the arena to the browser instead of requiring page zoom-out. */
+.board-stage{height:clamp(430px,calc(100dvh - 240px),790px);min-height:0;aspect-ratio:auto}
+.board-topline{padding:12px 18px 9px}.site-header{margin-bottom:12px}
+.board-topline h2{font-size:clamp(16px,1.6vw,20px)}.app-shell{padding-top:14px}
+.board-legend{padding:9px 14px 13px}.board-tools{align-items:center}.board-tools button{width:35px;height:35px}
+.board-quick-hud{display:none;gap:12px;align-items:center;justify-content:space-between;margin:0 14px 8px;border:1px solid #365c75;border-radius:12px;padding:7px 9px;background:#142b42}
+.board-quick-hud span{font-size:12px;font-weight:800;color:#caedff}
+.board-quick-hud button{padding:9px 20px}
+.board-focused .game-layout{grid-template-columns:minmax(0,1fr)!important}
+.board-focused .sidebar{display:none!important}
+.board-focused .board-stage{height:calc(100dvh - 245px);min-height:420px;max-height:none}
+.board-focused .board-quick-hud{display:flex}
+.board-focused .board-column{width:min(100%,1350px);margin:0 auto}
+.board-focused #focusBoard{background:#285a7b;border-color:#8fe3fc}
+.board-move-target{cursor:pointer;filter:drop-shadow(0 0 10px #7adeff8f);transition:filter .14s}
+.board-move-target:hover,.board-move-target:focus-visible{filter:drop-shadow(0 0 14px #eaffff)}
+.board-move-target:focus-visible circle{stroke:#ffffff;stroke-width:5}
+.setup-player .color-picker{min-width:94px;max-width:106px;border-color:#73d3ea;background:#122b41}
+.setup-player .swatch{box-shadow:0 0 10px currentColor}
+@media(max-width:900px){.board-stage{height:clamp(430px,66dvh,730px);aspect-ratio:auto}.board-focused .board-stage{height:calc(100dvh - 210px)}.board-focused .sidebar{display:none!important}}
+@media(max-width:640px){.board-stage{height:clamp(340px,54dvh,610px);aspect-ratio:auto}.board-topline{padding:9px 10px}.board-tools{gap:3px}.board-tools button{width:29px;height:29px}.board-focused .board-stage{height:calc(100dvh - 225px);min-height:340px}.board-quick-hud{margin:0 6px 7px}.board-quick-hud button{font-size:11px}.setup-player{flex-wrap:wrap}.setup-player label{min-width:70px}}
+
+/* Keep move instructions outside the board so the lower BASE holes stay visible. */
+.stage-hint{position:static;display:block;transform:none;max-width:none;overflow:visible;text-overflow:clip;white-space:normal;text-align:center;margin:7px 13px 0;padding:7px 12px;background:#0b263dd9;box-shadow:none;border-radius:9px}

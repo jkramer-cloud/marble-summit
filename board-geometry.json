@@ -1,6 +1,6 @@
 {
-  "name": "Marble Summit precision board v2.0 \u2014 star shortcuts and center",
-  "stage": "approved structure draft; movement-graph specification, not playable game",
+  "name": "Marble Summit precision board v2.1 — start/home correction and exterior corner BASEs",
+  "stage": "Phase 2.1: 139 positions, 6-fold rotation, HOME entry before START, exterior BASE",
   "geometry": {
     "sectors": 6,
     "outer_track_including_star": 90,
@@ -117,8 +117,8 @@
       "player": 1,
       "name": "RED",
       "color": "#ff6378",
-      "start": "T07",
-      "home_entry": "T08",
+      "start": "T08",
+      "home_entry": "T07",
       "approach_star": "T00",
       "outer_path_sector": [
         "T00",
@@ -154,8 +154,8 @@
       "player": 2,
       "name": "BLUE",
       "color": "#58c9ff",
-      "start": "T22",
-      "home_entry": "T23",
+      "start": "T23",
+      "home_entry": "T22",
       "approach_star": "T15",
       "outer_path_sector": [
         "T15",
@@ -191,8 +191,8 @@
       "player": 3,
       "name": "GREEN",
       "color": "#53e7a6",
-      "start": "T37",
-      "home_entry": "T38",
+      "start": "T38",
+      "home_entry": "T37",
       "approach_star": "T30",
       "outer_path_sector": [
         "T30",
@@ -228,8 +228,8 @@
       "player": 4,
       "name": "YELLOW",
       "color": "#ffcc58",
-      "start": "T52",
-      "home_entry": "T53",
+      "start": "T53",
+      "home_entry": "T52",
       "approach_star": "T45",
       "outer_path_sector": [
         "T45",
@@ -265,8 +265,8 @@
       "player": 5,
       "name": "PURPLE",
       "color": "#b58bff",
-      "start": "T67",
-      "home_entry": "T68",
+      "start": "T68",
+      "home_entry": "T67",
       "approach_star": "T60",
       "outer_path_sector": [
         "T60",
@@ -302,8 +302,8 @@
       "player": 6,
       "name": "ORANGE",
       "color": "#ff9d62",
-      "start": "T82",
-      "home_entry": "T83",
+      "start": "T83",
+      "home_entry": "T82",
       "approach_star": "T75",
       "outer_path_sector": [
         "T75",
@@ -989,7 +989,7 @@
       "sector": 0,
       "sector_step": 7,
       "main_next": "T08",
-      "special": "start",
+      "special": "home_entry",
       "owner": "RED"
     },
     "T08": {
@@ -1000,7 +1000,7 @@
       "sector": 0,
       "sector_step": 8,
       "main_next": "T09",
-      "special": "home_entry",
+      "special": "start",
       "owner": "RED"
     },
     "T09": {
@@ -1156,7 +1156,7 @@
       "sector": 1,
       "sector_step": 7,
       "main_next": "T23",
-      "special": "start",
+      "special": "home_entry",
       "owner": "BLUE"
     },
     "T23": {
@@ -1167,7 +1167,7 @@
       "sector": 1,
       "sector_step": 8,
       "main_next": "T24",
-      "special": "home_entry",
+      "special": "start",
       "owner": "BLUE"
     },
     "T24": {
@@ -1323,7 +1323,7 @@
       "sector": 2,
       "sector_step": 7,
       "main_next": "T38",
-      "special": "start",
+      "special": "home_entry",
       "owner": "GREEN"
     },
     "T38": {
@@ -1334,7 +1334,7 @@
       "sector": 2,
       "sector_step": 8,
       "main_next": "T39",
-      "special": "home_entry",
+      "special": "start",
       "owner": "GREEN"
     },
     "T39": {
@@ -1490,7 +1490,7 @@
       "sector": 3,
       "sector_step": 7,
       "main_next": "T53",
-      "special": "start",
+      "special": "home_entry",
       "owner": "YELLOW"
     },
     "T53": {
@@ -1501,7 +1501,7 @@
       "sector": 3,
       "sector_step": 8,
       "main_next": "T54",
-      "special": "home_entry",
+      "special": "start",
       "owner": "YELLOW"
     },
     "T54": {
@@ -1657,7 +1657,7 @@
       "sector": 4,
       "sector_step": 7,
       "main_next": "T68",
-      "special": "start",
+      "special": "home_entry",
       "owner": "PURPLE"
     },
     "T68": {
@@ -1668,7 +1668,7 @@
       "sector": 4,
       "sector_step": 8,
       "main_next": "T69",
-      "special": "home_entry",
+      "special": "start",
       "owner": "PURPLE"
     },
     "T69": {
@@ -1824,7 +1824,7 @@
       "sector": 5,
       "sector_step": 7,
       "main_next": "T83",
-      "special": "start",
+      "special": "home_entry",
       "owner": "ORANGE"
     },
     "T83": {
@@ -1835,7 +1835,7 @@
       "sector": 5,
       "sector_step": 8,
       "main_next": "T84",
-      "special": "home_entry",
+      "special": "start",
       "owner": "ORANGE"
     },
     "T84": {
@@ -1908,7 +1908,7 @@
       "id": "P1-H1",
       "type": "home",
       "owner": "RED",
-      "x": 610.0,
+      "x": 570.0,
       "y": 285.0,
       "next_inward": "P1-H2"
     },
@@ -1916,7 +1916,7 @@
       "id": "P1-H2",
       "type": "home",
       "owner": "RED",
-      "x": 610.0,
+      "x": 570.0,
       "y": 324.0,
       "next_inward": "P1-H3"
     },
@@ -1924,7 +1924,7 @@
       "id": "P1-H3",
       "type": "home",
       "owner": "RED",
-      "x": 610.0,
+      "x": 570.0,
       "y": 363.0,
       "next_inward": "P1-H4"
     },
@@ -1932,7 +1932,7 @@
       "id": "P1-H4",
       "type": "home",
       "owner": "RED",
-      "x": 610.0,
+      "x": 570.0,
       "y": 402.0,
       "next_inward": null
     },
@@ -1940,155 +1940,155 @@
       "id": "P1-B1",
       "type": "base",
       "owner": "RED",
-      "x": 568.0,
-      "y": 203.0
+      "x": 546.0,
+      "y": 76.0
     },
     "P1-B2": {
       "id": "P1-B2",
       "type": "base",
       "owner": "RED",
-      "x": 612.0,
-      "y": 203.0
+      "x": 553.0,
+      "y": 40.0
     },
     "P1-B3": {
       "id": "P1-B3",
       "type": "base",
       "owner": "RED",
-      "x": 568.0,
-      "y": 165.0
+      "x": 634.0,
+      "y": 76.0
     },
     "P1-B4": {
       "id": "P1-B4",
       "type": "base",
       "owner": "RED",
-      "x": 612.0,
-      "y": 165.0
+      "x": 627.0,
+      "y": 40.0
     },
     "P2-H1": {
       "id": "P2-H1",
       "type": "home",
       "owner": "BLUE",
-      "x": 897.047,
-      "y": 473.821,
+      "x": 877.047,
+      "y": 439.179,
       "next_inward": "P2-H2"
     },
     "P2-H2": {
       "id": "P2-H2",
       "type": "home",
       "owner": "BLUE",
-      "x": 863.272,
-      "y": 493.321,
+      "x": 843.272,
+      "y": 458.679,
       "next_inward": "P2-H3"
     },
     "P2-H3": {
       "id": "P2-H3",
       "type": "home",
       "owner": "BLUE",
-      "x": 829.497,
-      "y": 512.821,
+      "x": 809.497,
+      "y": 478.179,
       "next_inward": "P2-H4"
     },
     "P2-H4": {
       "id": "P2-H4",
       "type": "home",
       "owner": "BLUE",
-      "x": 795.722,
-      "y": 532.321,
+      "x": 775.722,
+      "y": 497.679,
       "next_inward": null
     },
     "P2-B1": {
       "id": "P2-B1",
       "type": "base",
       "owner": "BLUE",
-      "x": 947.061,
-      "y": 396.447
+      "x": 1046.046,
+      "y": 313.895
     },
     "P2-B2": {
       "id": "P2-B2",
       "type": "base",
       "owner": "BLUE",
-      "x": 969.061,
-      "y": 434.553
+      "x": 1080.723,
+      "y": 301.957
     },
     "P2-B3": {
       "id": "P2-B3",
       "type": "base",
       "owner": "BLUE",
-      "x": 979.97,
-      "y": 377.447
+      "x": 1090.046,
+      "y": 390.105
     },
     "P2-B4": {
       "id": "P2-B4",
       "type": "base",
       "owner": "BLUE",
-      "x": 1001.97,
-      "y": 415.553
+      "x": 1117.723,
+      "y": 366.043
     },
     "P3-H1": {
       "id": "P3-H1",
       "type": "home",
       "owner": "GREEN",
-      "x": 877.047,
-      "y": 816.821,
+      "x": 897.047,
+      "y": 782.179,
       "next_inward": "P3-H2"
     },
     "P3-H2": {
       "id": "P3-H2",
       "type": "home",
       "owner": "GREEN",
-      "x": 843.272,
-      "y": 797.321,
+      "x": 863.272,
+      "y": 762.679,
       "next_inward": "P3-H3"
     },
     "P3-H3": {
       "id": "P3-H3",
       "type": "home",
       "owner": "GREEN",
-      "x": 809.497,
-      "y": 777.821,
+      "x": 829.497,
+      "y": 743.179,
       "next_inward": "P3-H4"
     },
     "P3-H4": {
       "id": "P3-H4",
       "type": "home",
       "owner": "GREEN",
-      "x": 775.722,
-      "y": 758.321,
+      "x": 795.722,
+      "y": 723.679,
       "next_inward": null
     },
     "P3-B1": {
       "id": "P3-B1",
       "type": "base",
       "owner": "GREEN",
-      "x": 969.061,
-      "y": 821.447
+      "x": 1090.046,
+      "y": 865.895
     },
     "P3-B2": {
       "id": "P3-B2",
       "type": "base",
       "owner": "GREEN",
-      "x": 947.061,
-      "y": 859.553
+      "x": 1117.723,
+      "y": 889.957
     },
     "P3-B3": {
       "id": "P3-B3",
       "type": "base",
       "owner": "GREEN",
-      "x": 1001.97,
-      "y": 840.447
+      "x": 1046.046,
+      "y": 942.105
     },
     "P3-B4": {
       "id": "P3-B4",
       "type": "base",
       "owner": "GREEN",
-      "x": 979.97,
-      "y": 878.553
+      "x": 1080.723,
+      "y": 954.043
     },
     "P4-H1": {
       "id": "P4-H1",
       "type": "home",
       "owner": "YELLOW",
-      "x": 570.0,
+      "x": 610.0,
       "y": 971.0,
       "next_inward": "P4-H2"
     },
@@ -2096,7 +2096,7 @@
       "id": "P4-H2",
       "type": "home",
       "owner": "YELLOW",
-      "x": 570.0,
+      "x": 610.0,
       "y": 932.0,
       "next_inward": "P4-H3"
     },
@@ -2104,7 +2104,7 @@
       "id": "P4-H3",
       "type": "home",
       "owner": "YELLOW",
-      "x": 570.0,
+      "x": 610.0,
       "y": 893.0,
       "next_inward": "P4-H4"
     },
@@ -2112,7 +2112,7 @@
       "id": "P4-H4",
       "type": "home",
       "owner": "YELLOW",
-      "x": 570.0,
+      "x": 610.0,
       "y": 854.0,
       "next_inward": null
     },
@@ -2120,149 +2120,149 @@
       "id": "P4-B1",
       "type": "base",
       "owner": "YELLOW",
-      "x": 612.0,
-      "y": 1053.0
+      "x": 634.0,
+      "y": 1180.0
     },
     "P4-B2": {
       "id": "P4-B2",
       "type": "base",
       "owner": "YELLOW",
-      "x": 568.0,
-      "y": 1053.0
+      "x": 627.0,
+      "y": 1216.0
     },
     "P4-B3": {
       "id": "P4-B3",
       "type": "base",
       "owner": "YELLOW",
-      "x": 612.0,
-      "y": 1091.0
+      "x": 546.0,
+      "y": 1180.0
     },
     "P4-B4": {
       "id": "P4-B4",
       "type": "base",
       "owner": "YELLOW",
-      "x": 568.0,
-      "y": 1091.0
+      "x": 553.0,
+      "y": 1216.0
     },
     "P5-H1": {
       "id": "P5-H1",
       "type": "home",
       "owner": "PURPLE",
-      "x": 282.953,
-      "y": 782.179,
+      "x": 302.953,
+      "y": 816.821,
       "next_inward": "P5-H2"
     },
     "P5-H2": {
       "id": "P5-H2",
       "type": "home",
       "owner": "PURPLE",
-      "x": 316.728,
-      "y": 762.679,
+      "x": 336.728,
+      "y": 797.321,
       "next_inward": "P5-H3"
     },
     "P5-H3": {
       "id": "P5-H3",
       "type": "home",
       "owner": "PURPLE",
-      "x": 350.503,
-      "y": 743.179,
+      "x": 370.503,
+      "y": 777.821,
       "next_inward": "P5-H4"
     },
     "P5-H4": {
       "id": "P5-H4",
       "type": "home",
       "owner": "PURPLE",
-      "x": 384.278,
-      "y": 723.679,
+      "x": 404.278,
+      "y": 758.321,
       "next_inward": null
     },
     "P5-B1": {
       "id": "P5-B1",
       "type": "base",
       "owner": "PURPLE",
-      "x": 232.939,
-      "y": 859.553
+      "x": 133.954,
+      "y": 942.105
     },
     "P5-B2": {
       "id": "P5-B2",
       "type": "base",
       "owner": "PURPLE",
-      "x": 210.939,
-      "y": 821.447
+      "x": 99.277,
+      "y": 954.043
     },
     "P5-B3": {
       "id": "P5-B3",
       "type": "base",
       "owner": "PURPLE",
-      "x": 200.03,
-      "y": 878.553
+      "x": 89.954,
+      "y": 865.895
     },
     "P5-B4": {
       "id": "P5-B4",
       "type": "base",
       "owner": "PURPLE",
-      "x": 178.03,
-      "y": 840.447
+      "x": 62.277,
+      "y": 889.957
     },
     "P6-H1": {
       "id": "P6-H1",
       "type": "home",
       "owner": "ORANGE",
-      "x": 302.953,
-      "y": 439.179,
+      "x": 282.953,
+      "y": 473.821,
       "next_inward": "P6-H2"
     },
     "P6-H2": {
       "id": "P6-H2",
       "type": "home",
       "owner": "ORANGE",
-      "x": 336.728,
-      "y": 458.679,
+      "x": 316.728,
+      "y": 493.321,
       "next_inward": "P6-H3"
     },
     "P6-H3": {
       "id": "P6-H3",
       "type": "home",
       "owner": "ORANGE",
-      "x": 370.503,
-      "y": 478.179,
+      "x": 350.503,
+      "y": 512.821,
       "next_inward": "P6-H4"
     },
     "P6-H4": {
       "id": "P6-H4",
       "type": "home",
       "owner": "ORANGE",
-      "x": 404.278,
-      "y": 497.679,
+      "x": 384.278,
+      "y": 532.321,
       "next_inward": null
     },
     "P6-B1": {
       "id": "P6-B1",
       "type": "base",
       "owner": "ORANGE",
-      "x": 210.939,
-      "y": 434.553
+      "x": 89.954,
+      "y": 390.105
     },
     "P6-B2": {
       "id": "P6-B2",
       "type": "base",
       "owner": "ORANGE",
-      "x": 232.939,
-      "y": 396.447
+      "x": 62.277,
+      "y": 366.043
     },
     "P6-B3": {
       "id": "P6-B3",
       "type": "base",
       "owner": "ORANGE",
-      "x": 178.03,
-      "y": 415.553
+      "x": 133.954,
+      "y": 313.895
     },
     "P6-B4": {
       "id": "P6-B4",
       "type": "base",
       "owner": "ORANGE",
-      "x": 200.03,
-      "y": 377.447
+      "x": 99.277,
+      "y": 301.957
     },
     "CENTER": {
       "id": "CENTER",
@@ -2282,10 +2282,10 @@
   },
   "render_coords": {
     "viewBox": [
-      0,
-      0,
-      1670,
-      1240
+      27,
+      5,
+      1125,
+      1246
     ],
     "center": [
       590,

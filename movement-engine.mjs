@@ -36,10 +36,10 @@ export function validateBoard(board) {
   }
   for (let p = 0; p < 6; p++) {
     const player = players[p];
-    const expectedStart = `T${String(p * 15 + 7).padStart(2, '0')}`;
-    const expectedEntry = `T${String(p * 15 + 8).padStart(2, '0')}`;
+    const expectedStart = `T${String(p * 15 + 8).padStart(2, '0')}`;
+    const expectedEntry = `T${String(p * 15 + 7).padStart(2, '0')}`;
     assert(player.start === expectedStart && player.home_entry === expectedEntry, `Start/entry mismatch: ${player.name}`);
-    assert(nodes[player.start].main_next === player.home_entry, `Entry not one hole from start: ${player.name}`);
+    assert(nodes[player.home_entry].main_next === player.start, `HOME entry must be immediately before START: ${player.name}`);
     assert(player.approach_star === starIds[p], `Approach star mismatch: ${player.name}`);
     assert(nodes[starIds[p]].star_next_clockwise === starIds[(p + 1) % 6], `Broken star ring at ${starIds[p]}`);
     assert(player.base.length === 4 && player.home.length === 4, `Need four BASE and HOME positions for ${player.name}`);
