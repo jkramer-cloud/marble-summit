@@ -46,7 +46,7 @@ body.show-3d .board-stage{box-shadow:inset 0 0 45px #020a17}
 /* Physical-looking die has SIX real 3D CSS faces and real pip layouts, not the old spinning flat square. */
 body.show-3d .dice-shell{perspective:520px;background:radial-gradient(circle,#173d55,#0d1d32);border:1px solid #487893;border-radius:15px;box-shadow:inset 0 0 15px #000c,0 10px 20px #0006;transform:none;animation:none;overflow:visible}
 body.show-3d #dicePips{display:none}
-.arcade-die{display:none;position:relative;width:54px;height:54px;transform-style:preserve-3d;transform:rotateX(-17deg) rotateY(-18deg);transition:transform 1s cubic-bezier(.18,.75,.2,1.04);filter:drop-shadow(0 8px 5px #0009)}
+.arcade-die{display:none;position:relative;width:54px;height:54px;transform-style:preserve-3d;transform:rotateX(-17deg) rotateY(-18deg);transition:transform 1s cubic-bezier(.18,.75,.2,1.04)}
 body.show-3d .arcade-die{display:block}
 .die-face{position:absolute;inset:0;background:linear-gradient(145deg,#ffffff,#b6d5e6);border:3px solid #f4fbff;border-radius:8px;box-shadow:inset 0 0 7px #4e6b815c;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;padding:8px;backface-visibility:hidden}
 .die-face i{display:block;align-self:center;justify-self:center;width:8px;height:8px;border-radius:50%}
@@ -99,3 +99,10 @@ body.software-3d.show-3d #arcadeLabels{display:block}
 .banter-button{margin-left:6px}
 @media(max-width:750px){.setup-players{grid-template-columns:1fr}.seat-chooser{grid-template-columns:1fr}.seat-explain{text-align:center}.setup-seat-map{width:150px;height:150px}.setup-dialog{max-height:95dvh}}
 @media(prefers-reduced-motion:reduce){.arcade-die,.dice-shell.rolling{animation:none!important;transition:none!important}}
+
+/* v3.4: CSS filters on a 3D parent force transform-style: flat in Chrome.
+   Keep the parent free of filter/opacity/mask and shade each face instead. */
+body.show-3d .arcade-die{transform-style:preserve-3d;filter:none!important;opacity:1;will-change:transform}
+body.show-3d .die-face{box-shadow:0 2px 9px #0006,inset 0 0 7px #4e6b815c}
+#testClopsButton{border-color:#36718c;background:#11344d}
+#testClopsButton:hover{background:#1b5371}

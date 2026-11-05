@@ -1,3 +1,12 @@
+# v3.4 — CENTER, 3D die, marble sounds, and AI dialogue
+
+- Fixed the physically flattened-looking die: removed the cube-level CSS filter that forces its six 3D faces to flatten; corrected top/bottom orientations and improved consistent repeated-roll tumbles.
+- Reworked coconut-shell movement clops to schedule one double-clop for each traversed space on the audio clock, not the WebGL/Canvas render loop. Added a **Test clops** control that turns sound on and plays four sample hops.
+- Corrected CENTER rules so a marble can enter from any STAR using the final step of an exact die roll, including when reaching that STAR midway through an outer-track or STAR-ring move. Exiting CENTER remains a separate roll of exactly **1** to an available STAR.
+- Greatly expanded the ten AI strategies' situational quips and the twenty named characters' signature dialogue. Computer opponents respond to captures, their own setbacks, shortcut use, blocked turns, and HOME progress.
+- Retained the 139-hole geometry, START/HOME placements, seats, 3D/2D modes, saved game schema, and the remainder of the approved rules.
+- Tested: 60/60 automated checks passed, plus browser checks of six visible die faces, sound-enabled move scheduling, and no JavaScript errors during turn completion.
+
 # v3.3 — Arcade Rivals + Coconut Clops
 
 - Rebuilt dice rotations for clearer repeat-roll tumbling, consistent six-sided faces and original dice rattle/landing audio.

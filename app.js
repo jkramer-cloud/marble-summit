@@ -27,6 +27,137 @@ const PERSONALITIES = [
  {id:'spoiler',title:'Comeback Kid',desc:'When behind, targets leaders over scoring.',male:'Rex',female:'Roxy',say:['The scoreboard is only a suggestion.','If I cannot win yet, nobody relaxes.','New plan: disrupt the leader.'],capture:['Not so fast, front-runner!','The comeback tour begins at BASE.']},
  {id:'defender',title:'Guardian',desc:'Protects a lead and avoids risky detours.',male:'Nolan',female:'Nora',say:['Steady marbles win races.','I am guarding this lead carefully.','A calm roll is a good roll.'],capture:['Just maintaining the perimeter.','The defense made a play.']}
 ];
+// Expanded classroom-friendly quips. Profiles use different language for the same
+// situation, and the 20 selectable characters each add a couple of signature lines.
+const EXTRA_BANTER = {
+ balanced:{
+  say:['That seemed reasonable when I planned it.','I am cautiously optimistic about that marble.','A modest advance for marblekind.','Could be strategy. Could be luck.','I have considered at least two possible outcomes.','The board and I have reached an understanding.','No sudden movements. Except the marble.'],
+  capture:['That was a calculated inconvenience.','An unfortunate development for your marble.','I did check the landing space twice.','A textbook case of wrong place, wrong marble.'],
+  blocked:['My marble has filed a traffic complaint.','That roll was an excellent idea on paper.','Some turns are best enjoyed as spectators.'],
+  shortcut:['The shortcut committee approves this route.','A little geometry saves a lot of rolling.','I calculated a shorter scenic route.'],
+  home:['HOME is beginning to look surprisingly welcoming.','One more marble closer to my slippers.','I appreciate a properly organized HOME lane.'],
+  behind:['My strategy is still loading.','The scoreboard has not heard my closing argument.'],
+  hit:['I see we have chosen chaos today.','My marble was just getting comfortable there.'],
+  threat:['That marble looks alarmingly nearby.','No reason for anyone to panic. Yet.']},
+ sprinter:{
+  say:['Out of my way, I have imaginary appointments!','If you blink, you might miss this turn.','I run on pure rolling enthusiasm.','Where is the accelerator on this thing?','This is a sprint with occasional traffic jams.','The finish line is my favorite landmark.'],
+  capture:['Excuse me, express lane coming through!','That marble failed the speed check.','Road hazard removed at full velocity.'],
+  blocked:['The speed limit appears to be zero.','I have been pulled over by a marble.','My pit crew needs a better roll.'],
+  shortcut:['STAR lane? That is basically a turbo button.','Less track, more speed. Excellent.','My favorite route is the one with fewer corners.'],
+  home:['Fast delivery to HOME, no signature required.','Personal best! Well, personal-ish.'],
+  behind:['I am just saving speed for the last lap.','A comeback needs a running start.'],
+  hit:['I was still accelerating!','That was an unscheduled pit stop.'],
+  threat:['I am gaining on your tail lights.','Try to keep up with these marbles.']},
+ hunter:{
+  say:['I came for marbles, not a leisurely stroll.','Did anyone order a surprise return to BASE?','My target list keeps getting longer.','You can run, but only as far as the die allows.','I am tracking footprints. Tiny round footprints.','An interesting marble. I shall investigate.'],
+  capture:['Tag! You are BASE.','My collection of successful hunts grows.','Your marble had a very short vacation.','Another one takes the BASE shuttle.'],
+  blocked:['A hunter thwarted by a traffic cone.','My target escaped this round.','The die has sided with the wildlife.'],
+  shortcut:['A shortcut is an excellent ambush route.','I can see several targets from up here.'],
+  home:['Apparently I am supposed to finish the game, too.','Back from the hunt, briefly.'],
+  behind:['Last place just means more targets ahead.','The leaders have made themselves easy to find.'],
+  hit:['The hunter has become the hunted.','I shall remember this. Politely.'],
+  threat:['I can almost hear your marble trembling.','I am merely inspecting that landing spot.']},
+ closer:{
+  say:['My HOME lane is calling.','I am going straight home after this. Probably.','Does anyone have the HOME coordinates?','No time for detours, the couch awaits.','A warm beverage and a finished marble await.','My favorite place on this board is indoors.'],
+  capture:['My apologies. You were between me and HOME.','A small interruption to my commute.','I do not usually stop for mischief.'],
+  blocked:['HOME has put me on a waiting list.','Too many marbles in the hallway.','Can someone clear the front door?'],
+  shortcut:['The fastest way home includes a little starlight.','A shortcut? I have dinner plans.'],
+  home:['Shoes off. Marble parked.','At last, a proper HOME address.','Nothing beats the comfort of a safe socket.'],
+  behind:['I may be late, but I will get home.','I should have left five turns earlier.'],
+  hit:['I was nearly home, too!','That is going to complicate my commute.'],
+  threat:['I am trying very hard not to make eye contact.','Please let me pass. I have errands.']},
+ blocker:{
+  say:['Welcome to the scenic congestion zone.','A marble can make an excellent barricade.','You shall not pass. Legally speaking.','I offer premium parking at inconvenient places.','My roadwork schedule is ambitious.','This intersection is currently under review.'],
+  capture:['That route is permanently closed.','Traffic enforcement is surprisingly effective.','I have rerouted your journey to BASE.'],
+  blocked:['I appear to have blocked myself. Impressive.','The traffic department regrets this delay.','Even I cannot drive through that marble.'],
+  shortcut:['A shortcut creates new opportunities for congestion.','Traffic is lighter in the STAR lane. For now.'],
+  home:['My marbles have claimed the parking spaces.','Authorized personnel only beyond this point.'],
+  behind:['I can still control the roads from back here.','Last place is a strategic roadblock location.'],
+  hit:['Who moved my traffic barrier?','That was clearly an unauthorized tow.'],
+  threat:['I am considering a lane closure near you.','This road may become inconvenient shortly.']},
+ star:{
+  say:['The sky is the limit. The die is not.','I trust the stars. Mostly.','I believe in making astronomical detours.','Your route has too few constellations.','Shooting stars are faster than traffic.','The universe has excellent shortcuts.'],
+  capture:['That was a meteor strike in miniature.','You have been visited by a shooting marble.','Cosmic delivery: one trip to BASE.'],
+  blocked:['The stars have declined my invitation.','Space travel has temporarily been postponed.','My launch window has closed.'],
+  shortcut:['To infinity and... the next socket!','A STAR route worth orbiting for.','Welcome aboard the tiny space shuttle.'],
+  home:['Successful landing at the HOME station.','Ground control, the marble is safe.'],
+  behind:['My comeback is currently in orbit.','Even a small star can shine from behind.'],
+  hit:['Houston, we have a marble problem.','My orbit was interrupted by an asteroid.'],
+  threat:['Your marble has entered my gravitational field.','I am plotting an orbit near your BASE.']},
+ opportunist:{
+  say:['Interesting. That changes my calculations.','I always look twice at a good opening.','Every die roll has a silver lining.','I am taking notes. Mostly mental notes.','An opportunity has presented itself in socket form.','Risk and reward seem to be arguing again.'],
+  capture:['The landing spot was simply too valuable.','That was the optimal amount of trouble.','I like it when the math works out.'],
+  blocked:['No sensible options. I shall pass.','The odds did not cooperate.','Sometimes the best move is an involuntary skip.'],
+  shortcut:['An efficient route with a reasonable risk profile.','I approve this unusual investment in STARs.'],
+  home:['A secure return on my marble investment.','A finished marble is a profitable marble.'],
+  behind:['I can still optimize a comeback.','The leaders have underestimated my spreadsheet.'],
+  hit:['That cost more than I projected.','A setback, duly recorded.'],
+  threat:['I am evaluating a rather tempting target.','That nearby marble has caught my analytical eye.']},
+ trickster:{
+  say:['I have a plan. It changes every turn.','This move makes sense in another dimension.','The die is a tiny agent of chaos.','Nothing suspicious happening here.','I put the fun in unexpected geometry.','Do not look at my other marble.'],
+  capture:['Plot twist: the BASE is your destination.','Ta-da! A disappearing opponent.','That marble just became a volunteer.','A prank with excellent aim.'],
+  blocked:['The joke appears to be on me.','Even my trickery cannot invent six spaces.','This was not in the script.'],
+  shortcut:['Surprise, I am taking the STAR route!','A shortcut inside a shortcut would be nice.'],
+  home:['I have fooled everyone by actually going HOME.','My greatest trick: finishing a marble.'],
+  behind:['Being behind keeps my plans mysterious.','The plot is better when the underdog is losing.'],
+  hit:['That was my trick!','The prankster has been pranked.'],
+  threat:['I am just visiting that neighborhood. Probably.','Keep your eyes on the wrong marble.']},
+ spoiler:{
+  say:['The leaderboard looks far too comfortable.','I enjoy making a close game complicated.','A loss? Not until the last marble stops.','My comeback involves several detours.','Everyone has a plan until their marble goes to BASE.','The scoreboard is getting a little nervous.'],
+  capture:['The leader has been officially delayed!','Not so fast, marble royalty.','Back to BASE with the front-runner!','I call that a competitive adjustment.'],
+  blocked:['The revenge tour has a brief intermission.','I need one good roll. Just one.','The die did not get the comeback memo.'],
+  shortcut:['A STAR route straight toward the leaders.','A shortcut to trouble. My favorite.'],
+  home:['I can score points, but disrupting yours is tempting.','One in HOME, and I am not done yet.'],
+  behind:['Last place gives me excellent motivation.','I am losing, so now everybody should worry.','The best comeback starts with a little mischief.'],
+  hit:['Now this is personal. In a board-game way.','I will be back. That is literally the rule.'],
+  threat:['That leader is about to lose its personal space.','Your nearly-finished marble looks very convenient.']},
+ defender:{
+  say:['My lead and I prefer calm surroundings.','A cautious marble is a happy marble.','I believe in defensive driving.','Small risks, steady progress.','I have rehearsed this safe move.','No need to panic while I am in front.'],
+  capture:['Strictly a defensive measure.','That marble was getting too close.','Perimeter security has been restored.'],
+  blocked:['My defenses are perhaps too effective.','Patience is a protective strategy.','The safest move is no move, apparently.'],
+  shortcut:['Only a carefully inspected shortcut for me.','The STAR ring is clear enough. I checked.'],
+  home:['Safe and secure. That is how we finish.','Another marble behind friendly lines.'],
+  behind:['Time to defend what little I have left.','Slow and steady does not mean surrender.'],
+  hit:['I have identified a breach in security.','Someone forgot to close the gate.'],
+  threat:['Please respect the perimeter.','You are getting uncomfortably close.']}
+};
+const CHARACTER_SIGNATURES = {
+ 'balanced-m':['I have a backup plan for my backup plan.','The sensible choice is always worth considering.'],
+ 'balanced-f':['My strategy is 40% planning and 60% confidence.','The board is a puzzle and I brought a pencil.'],
+ 'sprinter-m':['Miles ahead. At least in my imagination.','I am setting a speed record for tiny glass spheres.'],
+ 'sprinter-f':['Maya the fastest marble win.','I have places to roll and people to surprise.'],
+ 'hunter-m':['Hunter here. My targets have names now.','I have packed binoculars for a tabletop game.'],
+ 'hunter-f':['Harper is on the marble trail.','I can smell a capture. Or is that dinner?'],
+ 'closer-m':['Felix has one goal: a quiet HOME lane.','Some marbles prefer a short commute.'],
+ 'closer-f':['Fiona would like to go HOME now.','My HOME lane has excellent interior design.'],
+ 'blocker-m':['Granting passage? Application denied.','This board needs more traffic signs.'],
+ 'blocker-f':['Grace has introduced a parking ordinance.','The road is mine to manage.'],
+ 'star-m':['Leo is checking the constellations again.','I own a telescope for exactly this situation.'],
+ 'star-f':['Luna sees a shortcut in the stars.','My horoscope said to watch your marbles.'],
+ 'opportunist-m':['Oscar likes opportunities with four wheels. Or none.','I have crunched the imaginary numbers.'],
+ 'opportunist-f':['Olivia has identified an intriguing opening.','I do enjoy a tidy calculation.'],
+ 'trickster-m':['Jasper is definitely up to something.','Would you believe that was intentional?'],
+ 'trickster-f':['Jade has a small surprise prepared.','I have brought confetti. Metaphorical confetti.'],
+ 'spoiler-m':['Rex has entered the comeback business.','I am not finished until the leader is nervous.'],
+ 'spoiler-f':['Roxy is planning a dramatic reversal.','The comeback story needs a villain, apparently.'],
+ 'defender-m':['Nolan keeps one eye on every exit.','A little security goes a long way.'],
+ 'defender-f':['Nora believes in a well-defended lead.','My marbles have safety protocols.']
+};
+for(const profile of PERSONALITIES){
+ const extra=EXTRA_BANTER[profile.id]||{};
+ for(const [kind,quotes] of Object.entries(extra)) profile[kind]=[...(profile[kind]||[]),...quotes];
+}
+const COMMON_BANTER = {
+ blocked:['I would like to appeal that die roll.','A bold plan, stopped by arithmetic.','No moves? The die has a strange sense of humor.'],
+ shortcut:['A detour with surprising benefits.','I do love a good shortcut.'],
+ home:['That marble has earned a safe parking spot.','HOME sweet HOME lane.'],
+ six:['Another turn? Do not mind if I do.','Six! The die understands ambition.','I get to roll again? What a delightful development.'],
+ win:['I would like to thank my loyal marbles.','The Summit has a new champion!'],
+ hit:['That capture was rather unexpected.','Well, that marble needed a vacation anyway.'],
+ threat:['That opponent looks uncomfortably close.','I sense an exciting collision ahead.'],
+ behind:['There is plenty of track left for an upset.','Every comeback begins somewhere.']
+};
+
 const CHARACTERS = PERSONALITIES.flatMap(x=>[
  {id:x.id+'-m',profile:x.id,name:x.male,title:x.title},
  {id:x.id+'-f',profile:x.id,name:x.female,title:x.title}
@@ -48,8 +179,26 @@ for(const p of PLAYERS) state.controllers[p.name]='human';
 const node = id => BOARD.nodes[id];
 const name = id => state.gameNames[id] || NAMES[colorSlots[id] || id] || id;
 const sectorName = id => NAMES[colorSlots[id] || id] || id;
-const selectQuote = arr => arr[Math.floor(Math.random()*arr.length)];
-function quip(owner,kind='say',force=false){if(!state.banterOn || state.gameControllers[owner]!=='bot')return;const snap=getSnapshot();if(!force && snap && snap.turn-state.quoteTurn<2)return;const profile=PERSON_BY_ID[state.gameProfiles[owner]||'balanced'];if(!profile)return;state.quote={name:name(owner),text:selectQuote(profile[kind]||profile.say),owner};state.quoteTurn=snap?.turn||0;}
+const recentQuips=new Map();
+function selectQuote(arr,owner){
+ const recent=recentQuips.get(owner)||[];
+ const choices=arr.filter(s=>!recent.includes(s));
+ const value=(choices.length?choices:arr)[Math.floor(Math.random()*(choices.length||arr.length))];
+ recentQuips.set(owner,[...recent.slice(-5),value]);
+ return value;
+}
+function quip(owner,kind='say',force=false){
+ if(!state.banterOn || state.gameControllers[owner]!=='bot')return;
+ const snap=getSnapshot();if(!force && snap && snap.turn-state.quoteTurn<1)return;
+ const profile=PERSON_BY_ID[state.gameProfiles[owner]||'balanced'];if(!profile)return;
+ const character=state.gameCharacters[owner];
+ const profileLines=profile[kind]||profile.say||[];
+ const extras=COMMON_BANTER[kind]||[];
+ const signatures=kind==='say'?(CHARACTER_SIGNATURES[character]||[]):[];
+ const pool=[...profileLines,...profileLines,...extras,...signatures];
+ if(!pool.length)return;
+ state.quote={name:name(owner),text:selectQuote(pool,owner),owner};state.quoteTurn=snap?.turn||0;
+}
 function renderQuip(){const el=$('characterQuote');if(!el)return;el.hidden=!state.quote||!state.banterOn;if(!el.hidden){$('quoteSpeaker').textContent=state.quote.name+' · '+(PERSON_BY_ID[state.gameProfiles[state.quote.owner]]?.title||'Computer');$('quoteText').textContent='“'+state.quote.text+'”';}const b=$('banterButton');if(b){b.textContent=state.banterOn?'Character chat: On':'Character chat: Off';b.setAttribute('aria-pressed',String(state.banterOn));}}
 const formatHole = id => {
  if(id==='CENTER') return 'CENTER';
@@ -72,11 +221,12 @@ function getMarbleColor(m){return COLORS[m.owner]||'#ffffff';}
 function randomDie(){return Math.floor(Math.random()*6)+1;}
 function showToast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2800);}
 function setMessage(msg,style=''){state.message=msg;state.messageStyle=style;}
-function save(){if(!state.game)return;try{localStorage.setItem(STORAGE,JSON.stringify({state:state.game.snapshot(),controllers:state.gameControllers,colorSlots:{...colorSlots},names:state.gameNames,profiles:state.gameProfiles,characters:state.gameCharacters,banterOn:state.banterOn,version:33}));$('saveStatus').textContent='Saved on this device ✓';}catch(e){$('saveStatus').textContent='Browser storage unavailable; game continues without autosave';}}
+function save(){if(!state.game)return;try{localStorage.setItem(STORAGE,JSON.stringify({state:state.game.snapshot(),controllers:state.gameControllers,colorSlots:{...colorSlots},names:state.gameNames,profiles:state.gameProfiles,characters:state.gameCharacters,banterOn:state.banterOn,version:34}));$('saveStatus').textContent='Saved on this device ✓';}catch(e){$('saveStatus').textContent='Browser storage unavailable; game continues without autosave';}}
 function loadSaved(){try{const data=JSON.parse(localStorage.getItem(STORAGE)||'null');if(!data?.state||!data.controllers)return null;new Game(BOARD,{state:data.state});return data;}catch(e){return null;}}
 function fullRender(){renderBoard();renderSidebar();window.Marble3D?.sync();}
 function rollDie(){if(!state.game||state.busy)return;const before=getSnapshot();if(before.phase!=='await-roll'||state.gameControllers[before.currentPlayer]==='bot')return;commitRoll(randomDie());}
-function commitRoll(die){const before=getSnapshot();if(!before||before.phase!=='await-roll')return;state.selected=null;state.preview=null;state.lastDie=die;state.game.roll(die);if(state.gameControllers[before.currentPlayer]==='bot'&&die===6)quip(before.currentPlayer,'say');const after=getSnapshot();$('diceShell').classList.remove('rolling');void $('diceShell').offsetWidth;$('diceShell').classList.add('rolling');window.Marble3D?.rollDie(die);if(after.phase==='await-move'){
+function afterRollBanter(die,shot){return shot.phase==='await-move'?(die===6?'six':'say'):'blocked';}
+function commitRoll(die){const before=getSnapshot();if(!before||before.phase!=='await-roll')return;state.selected=null;state.preview=null;state.lastDie=die;state.game.roll(die);if(state.gameControllers[before.currentPlayer]==='bot')quip(before.currentPlayer,afterRollBanter(die, state.game.snapshot()),die===6);const after=getSnapshot();$('diceShell').classList.remove('rolling');void $('diceShell').offsetWidth;$('diceShell').classList.add('rolling');window.Marble3D?.rollDie(die);if(after.phase==='await-move'){
  const moves=state.game.legalMoves();const n=[...new Set(moves.map(x=>x.marbleId))].length;
  setMessage(`${name(before.currentPlayer)} rolled ${die}. Choose one of ${n} movable marble${n===1?'':'s'} and a complete route.`,die===6?'success':'');
  if(n===1) state.selected=moves[0].marbleId;
@@ -88,13 +238,22 @@ function selectMarble(id){if(state.busy||!state.game)return;const moves=getMoves
 function routeLabel(move){
  switch(move.kind){case 'release':return 'Release marble from BASE';case 'star-ring':return 'Take the STAR shortcut';case 'star-to-outer':return 'Exit STAR ring toward outer track';case 'center-entry':return 'Enter CENTER portal';case 'center-exit':return `Exit CENTER to ${formatHole(move.to)}`;case 'home':return 'Move into / through HOME';default:return 'Continue around the outer track';}
 }
-function routeSummary(move){if(move.capture)return `Capture ${move.capture.split('-')[0]}! · ${move.path.length} space${move.path.length===1?'':'s'}`;if(move.kind==='release')return 'Complete roll used to leave BASE';if(move.kind==='center-exit')return 'Select any of six STAR exits';if(move.kind==='center-entry')return 'CENTER only with an exact roll of 1';return `${move.path.length} ${move.path.length===1?'space':'spaces'} · ${move.path.map(formatHole).join(' → ')}`;}
+function routeSummary(move){if(move.capture)return `Capture ${move.capture.split('-')[0]}! · ${move.path.length} space${move.path.length===1?'':'s'}`;if(move.kind==='release')return 'Complete roll used to leave BASE';if(move.kind==='center-exit')return 'Roll exactly 1 to exit CENTER to any STAR';if(move.kind==='center-entry')return 'The final die step reaches CENTER from a STAR';return `${move.path.length} ${move.path.length===1?'space':'spaces'} · ${move.path.map(formatHole).join(' → ')}`;}
 function selectRoute(id){if(!state.game||state.busy||getSnapshot()?.phase!=='await-move')return;
  const chosen=state.game.legalMoves().find(m=>m.id===id);if(!chosen)return;
  const previous=getSnapshot();state.game.move(chosen.id);const after=getSnapshot();const move=after.history.filter(x=>x.type==='move').at(-1);
  state.selected=null;state.preview=null;
  const capture=move.capture;
- if(capture)quip(move.player,'capture',true);else if(state.gameControllers[move.player]==='bot')quip(move.player,'say');
+ if(after.phase==='finished')quip(move.player,'win',true);
+ else if(capture){
+   // Occasionally let a captured computer rival answer back.
+   if(state.gameControllers[capture.player]==='bot' && (state.gameControllers[move.player]!=='bot'||Math.random()<.35))quip(capture.player,'hit',true);
+   else quip(move.player,'capture',true);
+ }else if(state.gameControllers[move.player]==='bot'){
+   const st=state.game.status(),my=st.find(p=>p.player===move.player),leader=Math.max(...st.map(p=>p.home));
+   const kind=move.kind==='home'?'home':move.kind.startsWith('star')||move.kind.startsWith('center')?'shortcut':my&&my.home<leader?'behind':'say';
+   quip(move.player,kind);
+ }
  if(after.phase==='finished')setMessage(`${name(after.winner)} WINS THE SUMMIT! All four marbles are HOME.`,'success');
  else if(capture)setMessage(`KNOCKOUT! ${name(move.player)} sent ${name(capture.player)}'s marble back to BASE.${move.bonusRoll?' Roll again!':''}`,'success');
  else if(move.bonusRoll)setMessage(`${name(move.player)} used all six spaces. BONUS ROLL!`,'success');
@@ -103,6 +262,10 @@ function selectRoute(id){if(!state.game||state.busy||getSnapshot()?.phase!=='awa
  animateMove(previous,chosen,move);
 }
 function animateMove(previous,chosen,event){
+ const durationMs=window.Marble3D?.active ? Math.max(650,Math.min(1800,chosen.path.length*150)) : Math.max(250,chosen.path.length*100);
+ if(!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){
+   window.Marble3D?.playMoveSounds?.(chosen.path.length,durationMs);
+ }
  if(window.Marble3D?.active){
    state.busy=true;fullRender();
    window.Marble3D.animateMove(previous,chosen,event,()=>{
@@ -120,7 +283,7 @@ function animateMove(previous,chosen,event){
  const frame=time=>{
   if(!state.motion)return;
   const t=clamp((time-state.motion.start)/total,0,1);const seg=t*(state.motion.path.length);const i=Math.min(state.motion.path.length-1,Math.floor(seg));const frac=clamp(seg-i,0,1);
-  if(i!==state.motion.lastClopStep){state.motion.lastClopStep=i;window.Marble3D?.sound('clop',i);}
+  // Audio clops are already scheduled independently of the graphics frame rate.
   const a=node(i===0?state.motion.from:state.motion.path[i-1]);const b=node(state.motion.path[i]);
   const x=a.x+(b.x-a.x)*frac,y=a.y+(b.y-a.y)*frac;
   const overlay=$('movingOverlay');if(overlay){overlay.setAttribute('transform',`translate(${x} ${y})`);}

@@ -1,4 +1,4 @@
-// Browser-ready mirror of movement-engine.mjs: do not edit independently.
+// Browser mirror of movement-engine.mjs — generated for the identical rules.
 /**
  * Marble Summit — Phase 1, deterministic movement/rules engine.
  * Pure ES module, compatible with browsers and Node 20+.
@@ -128,7 +128,9 @@ const annotate = (marble, path, edgeKinds, homeEligible, occupancies, die) => {
 /**
  * Generate complete, legal routes for ALL marbles owned by the current player.
  * Optional die overrides state.die for previews and testing; does not change state.
- * A star may only initiate a shortcut if the marble STARTS this die roll on that star.
+ * Star-ring hops can begin only when the turn STARTS on a STAR.
+ * CENTER is a special exception: arrive at any STAR with one pip left,
+ * and that final pip may enter CENTER. Exiting CENTER requires a fresh roll of 1.
  */
 function legalMoves(board, state, die = state.die) {
   assert(Number.isInteger(die) && die >= 1 && die <= 6, 'Die must be from 1 to 6');
@@ -170,10 +172,6 @@ function legalMoves(board, state, die = state.die) {
       continue;
     }
 
-    // CENTER is only a one-pip action from a star, and only on a new turn.
-    if (startNode.type === 'star' && die === 1 && !blockedByOwn('CENTER')) {
-      add(['CENTER'], ['center-in'], marble.homeEligible);
-    }
     const initialMode = startNode.type === 'star' ? 'choice' : 'outer';
     const explore = (at, remaining, mode, path, edges, eligible) => {
       if (remaining === 0) {
@@ -189,7 +187,13 @@ function legalMoves(board, state, die = state.die) {
         if (mode === 'outer' || mode === 'choice' || mode === 'ring') {
           choices.push([node.main_next, 'outer', 'outer']);
         }
-        // Stars crossed during normal movement never initiate shortcuts mid-roll.
+        // Only the final pip may enter CENTER. This works when arriving
+        // at a STAR mid-roll; it is not restricted to starting on a STAR.
+        if (node.type === 'star' && remaining === 1) {
+          choices.push(['CENTER', 'center', 'center-in']);
+        }
+        // The ordinary STAR ring shortcut still requires having started
+        // on a STAR (or already following the ring) this turn.
         if (node.type === 'star' && (mode === 'choice' || mode === 'ring')) {
           choices.push([node.star_next_clockwise, 'ring', 'star-hop']);
         }

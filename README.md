@@ -1,11 +1,11 @@
-# Marble Summit v3.3 — Arcade Rivals + Coconut Clops
+# Marble Summit v3.4 — Center, Dice, Sound & Banter Fixes
 
-A playable, six-sector marble-race board for GitHub Pages. **Phase 3 replaces the visual presentation, not the rules.** The original Phase 2.1 engine, board coordinates, all 139 fixed positions, and saved-game key are retained unchanged.
+A playable, six-sector marble-race board for GitHub Pages. **The 139-position Phase 2.1 board coordinates and save key are preserved.** The only movement-engine adjustment allows a marble to enter CENTER using the final pip of an exact roll after reaching a STAR, rather than requiring it to start that turn on the STAR. All other approved rules remain unchanged.
 
 ## Publish to your existing GitHub repository
 
 1. Open `jkramer-cloud/marble-summit` on GitHub.
-2. Extract the v3.3 Arcade Rivals ZIP on your computer.
+2. Extract the v3.4 GitHub-ready ZIP on your computer.
 3. Upload **all files and folders from inside the ZIP** to the **root** of the existing repository, replacing matching files. In particular, add the new `arcade3d.js` alongside `index.html`, `style.css`, `app.js`, `board-data.js`, and `engine.js`.
 4. Commit to the branch used by GitHub Pages (usually `main`). Your existing Learning Hub link still works.
 5. Open the site and use `Ctrl + Shift + R` to refresh after deployment.
@@ -17,7 +17,7 @@ This is a static site: no npm, build tools, server, API key, game account, outsi
 - Choose 2–6 human and/or computer players and customize marble/sector colors.
 - Roll a **1 or 6** to release a marble from BASE. A legal 6 grants an extra turn; a **6 with no legal move does not**.
 - In the 3D arena, click an available glowing marble, then its numbered destination. The sidebar route list remains available for precise selections.
-- You may use outer circuits, STAR shortcuts and the CENTER portal. Exact rolls required; own marbles block, opponents can be passed and captured.
+- You may use outer circuits, STAR shortcuts and the CENTER portal. A marble may enter CENTER if the final step of a complete die roll enters it from a STAR (including when reaching that STAR during the same roll); exiting CENTER requires a separate roll of exactly 1. Own marbles block, opponents can be passed and captured.
 - HOME entry remains optional after eligibility; HOME marbles can move inward by exact rolls and cannot jump their own marbles.
 - The first player to get all four marbles HOME wins.
 
@@ -27,7 +27,7 @@ This is a static site: no npm, build tools, server, API key, game account, outsi
 - Use the **angled** or **overhead** camera buttons; drag on the 3D board to orbit; **Shift + drag** to pan; use wheel, pinch or `+` / `−` buttons to zoom; crosshair resets the view.
 - The expanded-board button increases the playing area and provides an on-board Roll button.
 - Dark charcoal surfaces, illuminated player sectors, bright sockets and marbles, and **S/H/star/center symbols** help distinguish positions beyond color alone.
-- Sound is **off by default** for classroom use. Click **Sound off** to turn on dice, movement, capture and win audio. The browser will ask for no special permissions.
+- Sound is **off by default** for classroom use. Click **Sound off** to enable dice, coconut-step movement, capture and win audio. Use **Test clops** next to the toggle to preview four footsteps; it also enables sound if still muted. The browser will ask for no special permissions. Audio is scheduled directly on the Web Audio clock (not from 3D render frames).
 - Reduced-motion preference skips the marble animation. If WebGL is blocked, 3D Lite keeps the angled view and direct interaction available; the full 2D precision board remains an option.
 
 ## If 3D switches to 3D Lite
@@ -37,7 +37,7 @@ If hardware WebGL fails even on a capable computer, check the browser Console fo
 ## Reliability notes
 
 - No external graphics dependencies or runtime network requests.
-- The three Phase 2.1 gameplay/data files (`board-data.js`, `engine.js`, `movement-engine.mjs`) and `board-geometry.json` are kept byte-for-byte intact.
+- The approved **139 board positions**, `board-data.js`, and `board-geometry.json` are byte-for-byte unchanged. `engine.js` and `movement-engine.mjs` include the exact-roll CENTER correction only. The saved-state schema is unchanged.
 - Automated regression testing: `node --test tests/*.test.*`.
 - WebGL initialization is retried with standard, compatibility, and WebGL2 contexts. The GPU shaders now use matching `mediump` precision in both stages, fixing the reported `uEye` link error. If no context or shader is available, the software perspective board is used automatically; it has been tested in Chromium with WebGL unavailable, including a complete BASE release and direct destination click. Actual GPU rendering is still hardware-dependent, so verify WebGL presentation on a school computer.
 - You can switch to **2D** at any point. Switching during an animation will not block completion of that move.
@@ -51,6 +51,15 @@ If hardware WebGL fails even on a capable computer, check the browser Console fo
 - `board-data.js`, `engine.js`, `movement-engine.mjs`, `board-geometry.json` — approved Phase 2.1 rules and coordinates, unchanged
 - `tests/` — engine, UI, geometry and Phase 3 integration checks
 - `reference/` — approved precision diagrams and design documentation
+
+## v3.4 fixes and new character dialogue
+
+- Corrected the flattened die: removed a CSS filter on the transformed cube that caused Chrome to flatten the entire six-face 3D scene. The cube uses **six actual faces**, shows the rolled pips, and retains full tumbles even for repeated values. Fixed the up/down orientation as well.
+- Marble clops are now scheduled on the Web Audio clock when a move begins, independent of the frame rate or graphics mode. Includes **Test clops** next to Sound to verify audio immediately. Sound remains muted by default for classrooms.
+- Fixed CENTER entry: if a complete exact roll reaches a STAR with one pip remaining, that last pip can enter CENTER. **Exit still requires a 1 on a later roll**, to any available STAR.
+- Expanded the AI banter significantly with strategy-specific reactions to captures, being captured, shortcuts, HOME, blocked turns, and comebacks. Twenty named characters have additional signature lines and repeat avoidance. Character dialogue remains optional.
+- Existing named matches and saved progress remain compatible. No board geometry or player seat changes.
+- Validation: `node --test tests/*.test.*` (60 passing tests) plus browser-level dice geometry and move/audio checks.
 
 ## v3.3 Arcade Rivals additions
 

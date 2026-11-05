@@ -217,11 +217,6 @@ function drawSoftware(t){const s=softCtx,w=viewW,h=viewH;
 }
 
 function render(t){if(anim&&t>=anim.start+anim.duration*1.3){const done=anim.done;anim=null;done?.();}
- if(anim && !document.hidden && window.Marble3D?.active && anim.path.length && t<anim.start+anim.duration){
-  const progress=clamp((t-anim.start)/anim.duration,0,.999999);
-  const hop=Math.floor(progress*anim.path.length);
-  if(hop!==anim.lastClopStep){anim.lastClopStep=hop;coconutClop(hop);}
- }
  if(!window.Marble3D?.active||document.hidden){requestAnimationFrame(render);return;}
  if(useSoftware&&t-lastClock<32){requestAnimationFrame(render);return;}lastClock=t;
  const palette=Object.values(bridge.colors()).join(';');
@@ -267,32 +262,47 @@ function updateControls(){const b=$('cameraTop');if(b)b.setAttribute('aria-press
 function animateMove(previous,chosen,event,done){if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){done();return;}
  const captured=event.capture?.marbleId||event.capture?.id;
  anim={from:chosen.from,path:chosen.path,marbleId:chosen.marbleId,captureMarble:captured||null,captureFrom:chosen.to,start:performance.now(),duration:Math.max(650,Math.min(1800,chosen.path.length*150)),lastClopStep:-1,done};
- // Movement clops are triggered by actual travel between holes in render(), not a loose sound timer.
+ // Move clops are scheduled by app.animateMove using Web Audio so skipped WebGL frames cannot silence them.
  if(event.capture)setTimeout(()=>sound('capture'),Math.max(220,anim.duration*.72));if(event.bonusRoll)sound('bonus');if(bridge.snapshot()?.phase==='finished')setTimeout(()=>sound('win'),anim.duration);
 }
 let audioOn=false,audio=null,coconutNoise=null,diceRollSerial=0,dieAngles={x:-15,y:-15};
+function audioContext(){
+ if(!audio) audio=new (window.AudioContext||window.webkitAudioContext)();
+ if(audio.state==='suspended') audio.resume().catch(e=>console.warn('Audio unlock:',e));
+ return audio;
+}
+function scheduleMovementSounds(steps,durationMs){
+ if(!audioOn||!steps)return;
+ try{
+  // Schedule the actual clops on the audio clock; WebGL frame drops, 3D Lite
+  // performance and tab repaint timing cannot skip steps.
+  const ctx=audioContext();const start=ctx.currentTime+.045;
+  const stepSec=Math.max(.075,durationMs/1000/Math.max(1,steps));
+  for(let i=0;i<steps;i++) coconutClop(i,start+i*stepSec);
+ }catch(e){console.warn('Move audio unavailable:',e);}
+}
 // Original little coconut-shell percussion, synthesized locally: two dry wooden clicks per hop.
 // Not sampled from a movie, recording or soundtrack.
-function coconutClop(hop=0){
+function coconutClop(hop=0,scheduledTime=null){
  if(!audioOn)return;
  try{
-  audio ||= new (window.AudioContext||window.webkitAudioContext)();audio.resume();
+  audioContext();
   if(!coconutNoise){
    const length=Math.max(1,Math.floor(audio.sampleRate*.07));coconutNoise=audio.createBuffer(1,length,audio.sampleRate);
    const values=coconutNoise.getChannelData(0);
    for(let i=0;i<length;i++)values[i]=(Math.random()*2-1)*Math.exp(-i/length*8);
   }
-  const now=audio.currentTime;
+  const now=scheduledTime??audio.currentTime;
   for(let k=0;k<2;k++){
    const t=now+k*.038;
    const click=audio.createBufferSource();click.buffer=coconutNoise;
    const wood=audio.createBiquadFilter();wood.type='bandpass';wood.frequency.value=(k?620:435)+(hop%3)*25;wood.Q.value=.85;
-   const vol=audio.createGain();vol.gain.setValueAtTime(.0001,t);vol.gain.linearRampToValueAtTime(k?.065:.08,t+.002);
+   const vol=audio.createGain();vol.gain.setValueAtTime(.0001,t);vol.gain.linearRampToValueAtTime(k?.12:.18,t+.002);
    vol.gain.exponentialRampToValueAtTime(.0001,t+.060);
    click.connect(wood).connect(vol).connect(audio.destination);click.start(t);click.stop(t+.065);
    const tone=audio.createOscillator(),toneVol=audio.createGain();tone.type='triangle';
    tone.frequency.setValueAtTime(k?245:185,t);tone.frequency.exponentialRampToValueAtTime(k?155:110,t+.055);
-   toneVol.gain.setValueAtTime(.0001,t);toneVol.gain.linearRampToValueAtTime(.025,t+.003);
+   toneVol.gain.setValueAtTime(.0001,t);toneVol.gain.linearRampToValueAtTime(.045,t+.003);
    toneVol.gain.exponentialRampToValueAtTime(.0001,t+.055);
    tone.connect(toneVol).connect(audio.destination);tone.start(t);tone.stop(t+.059);
   }
@@ -302,7 +312,7 @@ function playDiceRattle(){
  // Short local Web Audio rattle made from filtered noise; no download and no music.
  if(!audioOn)return;
  try{
-  audio ||=new (window.AudioContext||window.webkitAudioContext)();audio.resume();const now=audio.currentTime;
+  audioContext();const now=audio.currentTime;
   const length=Math.max(1,Math.floor(audio.sampleRate*.055));const buffer=audio.createBuffer(1,length,audio.sampleRate);const data=buffer.getChannelData(0);
   for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*(1-i/length);
   for(let j=0;j<9;j++){
@@ -316,7 +326,7 @@ function playDiceRattle(){
 }
 function sound(kind,hop=0){
  if(!audioOn)return;if(kind==='roll'){playDiceRattle();return;}if(kind==='clop'){coconutClop(hop);return;}
- try{audio ||=new (window.AudioContext||window.webkitAudioContext)();audio.resume();const now=audio.currentTime;
+ try{audioContext();const now=audio.currentTime;
  const sequences=kind==='capture'?[[340,0,.09],[210,.10,.11],[125,.23,.20]]:kind==='bonus'?[[480,0,.09],[640,.09,.12]]:kind==='win'?[[392,0,.14],[494,.17,.14],[587,.34,.14],[784,.51,.26]]:[[260,0,.045]];
  for(const [f,delay,dur] of sequences){const osc=audio.createOscillator(),gain=audio.createGain();osc.type=kind==='capture'?'triangle':'sine';osc.frequency.setValueAtTime(f,now+delay);gain.gain.setValueAtTime(.0001,now+delay);gain.gain.exponentialRampToValueAtTime(.045,now+delay+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+delay+dur);osc.connect(gain).connect(audio.destination);osc.start(now+delay);osc.stop(now+delay+dur+.02);}}
  catch(err){console.warn('Audio unavailable:',err);}
@@ -332,12 +342,12 @@ function initDice(){
 function rollDice(n,play=true){
  const cube=$('arcadeDie');if(!cube)return;
  // Each target shows the actual rolled face. Increasing full turns guarantees an animation even for repeated numbers.
- const orientations={1:[-15,-15],2:[-15,-105],3:[75,-15],4:[-105,-15],5:[-15,75],6:[-15,165]};
+ const orientations={1:[-15,-15],2:[-15,-105],3:[-75,-15],4:[105,-15],5:[-15,75],6:[-15,165]};
  const [ax,ay]=orientations[n]||orientations[1];
  if(!play){cube.style.transition='none';dieAngles={x:ax,y:ay};cube.style.transform=`rotateX(${ax}deg) rotateY(${ay}deg)`;void cube.offsetWidth;cube.style.transition='';return;}
  diceRollSerial++;
- const turns=2+diceRollSerial*2;
- dieAngles={x:ax+360*turns,y:ay+360*turns};
+ const turns=2;
+ dieAngles={x:ax+360*turns*diceRollSerial,y:ay+360*turns*diceRollSerial};
  cube.style.transform=`rotateX(${dieAngles.x}deg) rotateY(${dieAngles.y}deg)`;
  sound('roll');
 }
@@ -345,7 +355,7 @@ const view=window.Marble3D={active:!!((gl&&program&&ctx)||useSoftware),supported
  sync(){ /* the renderer reads engine state on every frame */ }, zoom, reset:home, overhead, angled:home, animateMove,
  rollDie:rollDice,
  setMode(mode){if(mode==='3d'&&!view.supported)return false;view.active=mode==='3d';document.body.classList.toggle('show-3d',view.active);document.body.classList.toggle('software-3d',useSoftware);$('view3d')?.setAttribute('aria-pressed',String(view.active));$('view2d')?.setAttribute('aria-pressed',String(!view.active));return true;},
- sound(kind){sound(kind);}, get camera(){return {...CAM};},
+ sound(kind,hop=0){sound(kind,hop);}, playMoveSounds:scheduleMovementSounds, get camera(){return {...CAM};},
  boardPoint(id, height=.72){return project(wpos(id,height));},
  moveTargets(){const selected=bridge.selected();const relevant=bridge.moves().filter(m=>m.marbleId===selected),grouped={};for(const m of relevant)(grouped[m.to]||=[]).push(m);
  return relevant.map((m,i)=>{const p=project(wpos(m.to,.76)),arr=grouped[m.to];if(arr.length>1)p.x+=(arr.indexOf(m)-(arr.length-1)/2)*31;return {id:m.id,x:p.x,y:p.y,index:i+1};});},
@@ -356,7 +366,16 @@ $('view3d')?.addEventListener('click',()=>view.setMode('3d'));
 $('view2d')?.addEventListener('click',()=>view.setMode('2d'));
 $('cameraTop')?.addEventListener('click',overhead);
 $('cameraAngle')?.addEventListener('click',home);
-$('soundButton')?.addEventListener('click',()=>{audioOn=!audioOn;$('soundButton').textContent=audioOn?'♫ Sound on':'♪ Sound off';$('soundButton').setAttribute('aria-pressed',String(audioOn));if(audioOn)sound('bonus');});
+function setSoundEnabled(on){
+ audioOn=!!on;
+ const btn=$('soundButton');if(btn){btn.textContent=audioOn?'♫ Sound on':'♪ Sound off';btn.setAttribute('aria-pressed',String(audioOn));}
+ if(audioOn){try{audioContext();}catch(e){console.warn('Audio is unavailable:',e);}}
+}
+$('soundButton')?.addEventListener('click',()=>{setSoundEnabled(!audioOn);if(audioOn)coconutClop(0);});
+$('testClopsButton')?.addEventListener('click',()=>{
+ if(!audioOn)setSoundEnabled(true);
+ try{audioContext();scheduleMovementSounds(4,680);}catch(e){console.warn('Sound test unavailable:',e);}
+});
 if(view.supported){if(!useSoftware){makeSphere();createStatic();}view.setMode('3d');if(useSoftware){const b=$('view3d');if(b)b.title='3D Lite: software perspective renderer (WebGL unavailable)';const note=$('renderModeNote');if(note){note.hidden=false;note.textContent='3D Lite · software graphics';note.title='WebGL was unavailable. 3D perspective remains playable using a CPU renderer.';}const hint=$('stageHint');if(hint)hint.textContent='3D Lite is active: your browser blocked WebGL, so perspective is rendered in software. Drag to orbit, scroll to zoom, or choose 2D for precision.';}requestAnimationFrame(render);}else{view.setMode('2d');
  for(const id of ['view3d','cameraTop','cameraAngle']){const el=$(id);if(el){el.disabled=true;el.title='3D unavailable on this browser or device';}}
  const s=$('boardQuickStatus');if(s)s.textContent='WebGL unavailable — precision 2D board active';
