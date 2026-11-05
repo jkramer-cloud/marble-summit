@@ -1,63 +1,49 @@
-# Marble Summit — Phase 2.1: Neon Corners & Direct Board Play
+# Marble Summit v3.0 — Neon Arcade
 
-Version: 2.1 · November 4, 2026
+A playable, six-sector marble-race board for GitHub Pages. **Phase 3 replaces the visual presentation, not the rules.** The original Phase 2.1 engine, board coordinates, all 139 fixed positions, and saved-game key are retained unchanged.
 
-This **playable overhead** game is the revised Phase 2 prototype. It is not the Phase 3 fully 3D game. The geometry, route legality, die rules and animations are based on the deterministic movement engine.
+## Publish to your existing GitHub repository
 
-## Deploy to your existing GitHub repository
+1. Open `jkramer-cloud/marble-summit` on GitHub.
+2. Extract `MARBLE_SUMMIT_PHASE3_3D_ARCADE_GITHUB_READY.zip` on your computer.
+3. Upload **all files and folders from inside the ZIP** to the **root** of the existing repository, replacing matching files. In particular, add the new `arcade3d.js` alongside `index.html`, `style.css`, `app.js`, `board-data.js`, and `engine.js`.
+4. Commit to the branch used by GitHub Pages (usually `main`). Your existing Learning Hub link still works.
+5. Open the site and use `Ctrl + Shift + R` to refresh after deployment.
 
-1. Unzip this archive.
-2. Open your existing `marble-summit` GitHub repository.
-3. Upload the five required files below to the **repository root**, replacing matching files. You may also include the reference files, JSON source and tests.
-4. Commit and wait for your configured GitHub Pages site to deploy. Reload with `Ctrl + Shift + R` if needed.
-5. The existing Learning Hub card will continue opening Marble Summit; no Hub update is required.
+This is a static site: no npm, build tools, server, API key, game account, outside graphics library or internet connection is needed **after the webpage files load**. Audio is synthesized locally by the browser. Game progress remains in the current browser's local storage.
 
-Required web files:
+## How to play
 
-```
-index.html
-style.css
-app.js
-board-data.js
-engine.js
-```
+- Choose 2–6 human and/or computer players and customize marble/sector colors.
+- Roll a **1 or 6** to release a marble from BASE. A legal 6 grants an extra turn; a **6 with no legal move does not**.
+- In the 3D arena, click an available glowing marble, then its numbered destination. The sidebar route list remains available for precise selections.
+- You may use outer circuits, STAR shortcuts and the CENTER portal. Exact rolls required; own marbles block, opponents can be passed and captured.
+- HOME entry remains optional after eligibility; HOME marbles can move inward by exact rolls and cannot jump their own marbles.
+- The first player to get all four marbles HOME wins.
 
-Additional source/development files: `board-geometry.json`, `movement-engine.mjs`, `tests/`, `reference/`, `CHANGELOG.md`, `README.md`.
+## Camera and accessibility
 
-## What's different from Phase 2
+- **3D** is the default on devices with WebGL graphics support. **2D** switches back to the approved precision board without altering the match.
+- Use the **angled** or **overhead** camera buttons; drag on the 3D board to orbit; **Shift + drag** to pan; use wheel, pinch or `+` / `−` buttons to zoom; crosshair resets the view.
+- The expanded-board button increases the playing area and provides an on-board Roll button.
+- Dark charcoal surfaces, illuminated player sectors, bright sockets and marbles, and **S/H/star/center symbols** help distinguish positions beyond color alone.
+- Sound is **off by default** for classroom use. Click **Sound off** to turn on dice, movement, capture and win audio. The browser will ask for no special permissions.
+- Reduced-motion preference skips the marble animation. If WebGL is blocked, the full 2D game remains available.
 
-**Corrected HOME/START sequence:** For each player, the HOME ENTRY hole now comes one position BEFORE START in clockwise direction. For example Red HOME ENTRY is T07 and Red START is T08. It is therefore not possible to release a marble and immediately enter HOME. A marble earns HOME eligibility individually after it reaches its approach STAR on its completed circuit or valid shortcut.
+## Reliability notes
 
-**BASE marbles outside the hexagon:** Each player has four BASE holes on a lighted platform beyond their corner: two on each side of the corner's radial line. The six platforms are exactly 60° rotations of one reference arrangement.
+- No external graphics dependencies or runtime network requests.
+- The three Phase 2.1 gameplay/data files (`board-data.js`, `engine.js`, `movement-engine.mjs`) and `board-geometry.json` are kept byte-for-byte intact.
+- Automated regression testing: `node --test tests/*.test.*`.
+- The 3D canvas uses a lightweight native WebGL renderer. Interactive controller checks were run using a simulated WebGL context; the target environment prevented rendering WebGL pixels during QA. Verify the final 3D appearance and GPU performance on one school Chromebook/PC before distributing the update to all students.
+- You can switch to **2D** at any point. Switching during an animation will not block completion of that move.
 
-**Choose directly on the board:** After rolling, click a glowing marble, then click its numbered glowing destination pad. If several routes end on the same hole, they have distinct numbered markers. The route selector in the sidebar remains available for longer descriptions and route previews.
+## Project files
 
-**Choose colors:** In setup, each player can select a marble color from the six palettes. If another player already owns that color, the colors swap. The player's marbles, BASE platform, sector background, track line, HOME lane, START/ENTRY rings and score accent all use that assigned color. Player labels follow the actual selected color, not the original seat number.
-
-**Screen-fit & expanded mode:** The overhead board height adjusts to the browser viewport instead of extending to a giant fixed rectangle. Use `⛶` to expand the board and hide the sidebar temporarily; a quick ROLL DIE button stays available. `⌖` resets board fit, plus/minus zoom, scroll to zoom, drag to pan. The complete board is visible by default on desktop and mobile at normal browser zoom.
-
-**Important save behavior:** Because the START and HOME entrance holes changed in the movement graph, v2.1 uses a NEW local-storage save key (`marble-summit-precision-phase2-v2`). This avoids silently loading old marbles into changed positions. Existing v2 saves are not deleted, but they cannot be resumed in v2.1 automatically. Start a fresh match. New v2.1 matches autosave and resume normally on the same browser/device.
-
-## Rules retained
-
-- Two to six local players; humans and/or simple computer opponents.
-- Roll 1 or 6 to release from BASE; the full die value is used for release.
-- Completing a legal move after rolling 6 earns an extra turn; unusable 6 does NOT.
-- Own marbles block every traversed hole; opponents can be passed and captured by exact landing.
-- Only a marble that has earned its own HOME eligibility may enter its HOME lane; HOME entry is optional.
-- HOME marbles can move inward on later turns, but cannot pass own pieces or overshoot.
-- STAR shortcuts travel clockwise; a marble on a STAR at the beginning of a turn can choose the outer route or STAR ring. Exit from stars toward other sectors to threaten captures.
-- Enter CENTER with exactly 1 from a STAR; exit CENTER with exactly 1 to a chosen STAR.
-- Full die value required; no partial die use; first player to fill all four HOME holes wins.
-
-## Quality checks
-
-Run offline tests with Node 20+:
-
-```bash
-node --test tests/*.test.*
-```
-
-**35 automated tests passed** on this revision (Phase 1 engine regression, updated geometry, UI smoke tests). An additional Chromium browser check exercised color swapping, starting a match, clicking a marble and its *on-board* destination after rolling 6, the bonus turn, board expansion, and mobile/laptop/desktop layouts, with no page errors. Browser verification was performed by loading all local HTML/CSS/JS directly into the page instead of requesting the site over the network.
-
-The Phase 3 3D rendering, physics die and advanced effects remain future features. This package deliberately does not replace the robust movement engine with screen-based approximations.
+- `index.html` — webpage, game UI, setup, help, view controls
+- `style.css` — neon arcade layout, contrast/accessibility, physical CSS six-faced die
+- `arcade3d.js` — new self-contained WebGL meshes, camera, rendered marbles, click targets, animations, sound
+- `app.js` — original game UI with a small view-bridge added; existing game/save logic preserved
+- `board-data.js`, `engine.js`, `movement-engine.mjs`, `board-geometry.json` — approved Phase 2.1 rules and coordinates, unchanged
+- `tests/` — engine, UI, geometry and Phase 3 integration checks
+- `reference/` — approved precision diagrams and design documentation

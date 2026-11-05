@@ -1,4 +1,4 @@
-/* Marble Summit Phase 2 — user interface. Board positions and legal moves come exclusively from the Phase 1 engine. */
+/* Marble Summit Phase 3 — view-independent game interface. Board positions and legal moves come exclusively from the Phase 1 engine. */
 (() => {
 'use strict';
 const BOARD = window.MARBLE_BOARD;
@@ -46,9 +46,9 @@ function showToast(t){$('toast').textContent=t;$('toast').classList.add('show');
 function setMessage(msg,style=''){state.message=msg;state.messageStyle=style;}
 function save(){if(!state.game)return;try{localStorage.setItem(STORAGE,JSON.stringify({state:state.game.snapshot(),controllers:state.gameControllers,colorSlots:{...colorSlots},version:21}));$('saveStatus').textContent='Saved on this device ✓';}catch(e){$('saveStatus').textContent='Browser storage unavailable; game continues without autosave';}}
 function loadSaved(){try{const data=JSON.parse(localStorage.getItem(STORAGE)||'null');if(!data?.state||!data.controllers)return null;new Game(BOARD,{state:data.state});return data;}catch(e){return null;}}
-function fullRender(){renderBoard();renderSidebar();}
+function fullRender(){renderBoard();renderSidebar();window.Marble3D?.sync();}
 function rollDie(){if(!state.game||state.busy)return;const before=getSnapshot();if(before.phase!=='await-roll'||state.gameControllers[before.currentPlayer]==='bot')return;commitRoll(randomDie());}
-function commitRoll(die){const before=getSnapshot();if(!before||before.phase!=='await-roll')return;state.selected=null;state.preview=null;state.lastDie=die;state.game.roll(die);const after=getSnapshot();$('diceShell').classList.remove('rolling');void $('diceShell').offsetWidth;$('diceShell').classList.add('rolling');if(after.phase==='await-move'){
+function commitRoll(die){const before=getSnapshot();if(!before||before.phase!=='await-roll')return;state.selected=null;state.preview=null;state.lastDie=die;state.game.roll(die);const after=getSnapshot();$('diceShell').classList.remove('rolling');void $('diceShell').offsetWidth;$('diceShell').classList.add('rolling');window.Marble3D?.rollDie(die);if(after.phase==='await-move'){
  const moves=state.game.legalMoves();const n=[...new Set(moves.map(x=>x.marbleId))].length;
  setMessage(`${name(before.currentPlayer)} rolled ${die}. Choose one of ${n} movable marble${n===1?'':'s'} and a complete route.`,die===6?'success':'');
  if(n===1) state.selected=moves[0].marbleId;
@@ -74,6 +74,16 @@ function selectRoute(id){if(!state.game||state.busy||getSnapshot()?.phase!=='awa
  animateMove(previous,chosen,move);
 }
 function animateMove(previous,chosen,event){
+ if(window.Marble3D?.active){
+   state.busy=true;fullRender();
+   window.Marble3D.animateMove(previous,chosen,event,()=>{
+     state.busy=false;state.motion=null;fullRender();
+     if(event.capture)captureBurst(chosen.to,event.capture);
+     else if(getSnapshot().phase==='finished')showToast(`CHAMPION: ${name(getSnapshot().winner)}!`);
+     botAdvance();
+   });
+   return;
+ }
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){state.busy=false;state.motion=null;if(event.capture)captureBurst(chosen.to,event.capture);else if(getSnapshot().phase==='finished')showToast(`${name(getSnapshot().winner)} wins!`);fullRender();botAdvance();return;}
  state.busy=true;state.motion={marbleId:chosen.marbleId,from:chosen.from,path:chosen.path,start:performance.now(),stepMs:100,position:node(chosen.from),color:COLORS[event.player]};
  fullRender();
@@ -238,9 +248,9 @@ function botAdvance(){clearTimeout(state.botTimer);if(!state.game||state.busy||!
  }
  },latestWait(shot));}
 function latestWait(shot){return shot.phase==='await-roll'?620:650;}
-function resetCamera(){state.camera=freshCamera();updateCamera();}
+function resetCamera(){if(window.Marble3D?.active){window.Marble3D.reset();return;}state.camera=freshCamera();updateCamera();}
 function updateCamera(){const c=state.camera;$('boardSvg').setAttribute('viewBox',`${c.x} ${c.y} ${c.w} ${c.h}`);}
-function zoom(factor,rx=.5,ry=.5){const c=state.camera;const minW=490,maxW=1330;const newW=clamp(c.w*factor,minW,maxW);const newH=c.h*(newW/c.w);c.x+= (c.w-newW)*rx;c.y+=(c.h-newH)*ry;c.w=newW;c.h=newH;limitCamera();updateCamera();}
+function zoom(factor,rx=.5,ry=.5){if(window.Marble3D?.active){window.Marble3D.zoom(1/factor);return;}const c=state.camera;const minW=490,maxW=1330;const newW=clamp(c.w*factor,minW,maxW);const newH=c.h*(newW/c.w);c.x+= (c.w-newW)*rx;c.y+=(c.h-newH)*ry;c.w=newW;c.h=newH;limitCamera();updateCamera();}
 function limitCamera(){const c=state.camera;c.x=clamp(c.x,-140,1320-c.w);c.y=clamp(c.y,-140,1400-c.h);}
 function onBoardClick(e){if(Date.now()<state.suppressClickUntil||state.busy)return;const route=e.target.closest?.('[data-route-id]');if(route){selectRoute(route.getAttribute('data-route-id'));return;}const marble=e.target.closest?.('[data-marble]');if(marble)selectMarble(marble.getAttribute('data-marble'));}
 function handleDown(e){if(e.button!==0||e.target.closest?.('[data-marble],[data-route-id]'))return;state.down={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,lastX:e.clientX,lastY:e.clientY,moved:false};}
@@ -257,5 +267,11 @@ function wire(){
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)botAdvance();});
 }
 function boot(){wire();state.saved=loadSaved();if(state.saved){restoreColors(state.saved.colorSlots);state.setupCount=state.saved.state.activePlayers.length;for(const [k,v] of Object.entries(state.saved.controllers))state.controllers[k]=v;}$('setupModal').hidden=false;renderSetup();if(!state.saved){$('resumeButton').hidden=true;}setMessage('Choose your players and begin.');drawDie(1);}
+window.MarbleSummitView={
+  snapshot:getSnapshot,moves:getMoves,selected:()=>state.selected,preview:()=>state.preview,busy:()=>state.busy,
+  colors:()=>COLORS,selectMarble,selectRoute,
+  setMessage,focus:()=>document.body.classList.contains('board-focused'),
+  getGame:()=>state.game, loadSaved:()=>state.saved
+};
 boot();
 })();
